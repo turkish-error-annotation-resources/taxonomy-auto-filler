@@ -1,4 +1,6 @@
 class Error:
+    """ Represents <Error> in the paper https://doi.org/10.1007/s10579-024-09794-0 """
+
     def __init__(self, idLabelStudio = 0, idData = 0, rawText = '', sentOrig = '', sentCorr = '', idxStartErr = 0, idxEndErr = 0, errType = '', incorrText = '', corrText = '', idxStartSent = 0, idxEndSent = 0, errTax = None):
         self.idLabelStudio = idLabelStudio # data[0]["id"] -> id that Label Studio assigned to task (text)
         self.idData = idData # data[0]["data"]["ID"] -> id that is coming from the data itself (per text)
@@ -21,6 +23,8 @@ class Error:
         print('idxStartErr: ', self.idxStartErr)
         print('idxEndErr: ', self.idxEndErr)
         print('errType: ', self.errType)
+        print('incorrText: ', self.incorrText)
+        print('corrText: ', self.corrText)
         print('errTax.pos: ', self.errTax.pos)
         print('errTax.unit: ', self.errTax.unit)
         print('errTax.phenomenon: ', self.errTax.phenomenon)
