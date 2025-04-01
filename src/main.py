@@ -1,5 +1,7 @@
 import argparse
 import json
+from model.error import Error
+from model.taxonomy import Taxonomy
 
 def main():
     parser = argparse.ArgumentParser(description = "Process a file path.")
@@ -17,6 +19,32 @@ def main():
         print(f"An unexpected error occurred: {e}")
     
     print("Number of tasks: ", len(data))
+
+    
+    errorList = []
+    for idx, task in enumerate(data): # for each task in input json data
+        for result in task["annotations"][0]["result"]: # annotators were informed that they should create only one "annotation" object in Label Studio
+            if result["type"] == "labels": # there are two types of results: "labels" (contains error type) and "textarea" (contains corrected form)
+                err = Error()
+                err.idLabelStudio = task["id"]
+                err.idData = task["data"]["ID"]
+                err.rawText = task["data"]["DATA"]
+                #err.sentOrig, err.sentIdxStart, err.sentIdxEnd = Handler.extract_sentence(err.rawText, err.idxStart, err.idxEnd)
+                #err.sentCorr = Handler.get_corrected_sentence(data, idx, err.rawText, err.sentOrig, err.sentIdxStart, err.sentIdxEnd)
+                err.idxStartErr = result["value"]["start"]
+                err.idxEndErr = result["value"]["end"]
+                err.errType = result["value"]["labels"][0] # from an observational experience, it is known that Label Studio create different result object for the same region that has different label
+                err.incorrText = result["value"]["text"]
+                #err.corrText = Handler.get_corrected_text(data, result["id"], idx)
+
+                err.errTax = Taxonomy()
+                #err.errTax.pos = POS.mapPOS(err.errType, err.incorrText, err.corrText, err.sentOrig)
+                #err.errTax.unit = Unit.mapUnit(err.errType, err.incorrText, err.corrText, err.sentOrig) # bazı hata tiplerinde (YA) unit tespiti yapmak gerekiyor
+                #err.errTax.phenomenon = Phenomenon.mapPhenomenon(err.errType, err.incorrText, err.corrText)
+                #err.errTax.level = LinguisticLevel.mapLinguisticLevel(err.errType) # her hata tipi tek bir linguistic level'a map ediyor
+
+                err.print()
+                errorList.append(err)
     
 if __name__ == "__main__":
     main()
