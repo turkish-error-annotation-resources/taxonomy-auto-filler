@@ -33,6 +33,4 @@ class POS(Enum):
         'YA': POS.NONE # POS.__mapPOS(incorrText, corrText, corrSent)
         }
 
-        print("POS is mapped.")
-
         return mapping.get(errType, POS.NONE)

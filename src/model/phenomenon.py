@@ -1,7 +1,7 @@
 from enum import Enum
 
 class Phenomenon(Enum):
-    """ Represents <phenomenon> in the paper https://doi.org/10.1007/s10579-024-09794-0 """
+    """ Represents <Phenomenon> in the paper https://doi.org/10.1007/s10579-024-09794-0 """
 
     NONE = 0
     OMISSION = 1 # the absence of an item that must appear in a well-formed utterance
@@ -21,7 +21,5 @@ class Phenomenon(Enum):
         'KI': Phenomenon.MISUSE,
         'YA': Phenomenon.MISUSE #Phenomenon.__mapPhenomenonForYA(incorrText.strip(), corrText.strip())
         }
-
-        print("Phenomenon is mapped.")
 
         return mapping.get(errType, Phenomenon.NONE)

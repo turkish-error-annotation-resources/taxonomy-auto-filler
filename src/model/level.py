@@ -1,7 +1,7 @@
 from enum import Enum
 
 class Level(Enum):
-    """ Represents <linguistic level> in the paper https://doi.org/10.1007/s10579-024-09794-0 """
+    """ Represents <Linguistic Level> in the paper https://doi.org/10.1007/s10579-024-09794-0 """
 
     NONE = 0
     PHONOLOGY = 1
@@ -22,7 +22,5 @@ class Level(Enum):
         'KI': Level.ORTHOGRAPHY,
         'YA': Level.ORTHOGRAPHY
         }
-
-        print("Level is mapped.")
         
         return mapping.get(errType, Level.NONE)
