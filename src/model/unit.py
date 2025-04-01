@@ -1,7 +1,7 @@
 from enum import Enum
 
 class Unit(Enum):
-    """ Represents <unit> in the paper https://doi.org/10.1007/s10579-024-09794-0 """
+    """ Represents <Unit> in the paper https://doi.org/10.1007/s10579-024-09794-0 """
     
     NONE = 0
     GRAPHEME = 1
@@ -22,7 +22,5 @@ class Unit(Enum):
         'KI': Unit.WORD,
         'YA': Unit.WORD # Unit.__mapUnitForYA(incorrText.lower(), corrText.lower())
         }
-
-        print("Unit is mapped.")
 
         return mapping.get(errType, Unit.NONE)
