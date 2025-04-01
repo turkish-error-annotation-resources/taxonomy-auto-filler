@@ -1,7 +1,10 @@
 import argparse
 import json
+import globals
 from model.error import Error
 from model.taxonomy import Taxonomy
+from helper import Helper
+
 
 def main():
     parser = argparse.ArgumentParser(description = "Process a file path.")
@@ -12,17 +15,15 @@ def main():
 
     try:
         with open(args.path, 'r') as file:
-            data = json.load(file)
-    except FileNotFoundError:
-        print(f"Error: The file '{args.path}' was not found.")
+            globals.data = json.load(file)
     except Exception as e:
         print(f"An unexpected error occurred: {e}")
+        raise ValueError("An unexpected error occurred. ")
     
-    print("Number of tasks: ", len(data))
+    print("Number of tasks: ", len(globals.data))
 
-    
     errorList = []
-    for idx, task in enumerate(data): # for each task in input json data
+    for idx, task in enumerate(globals.data): # for each task in input json data
         for result in task["annotations"][0]["result"]: # annotators were informed that they should create only one "annotation" object in Label Studio
             if result["type"] == "labels": # there are two types of results: "labels" (contains error type) and "textarea" (contains corrected form)
                 err = Error()
@@ -35,7 +36,7 @@ def main():
                 err.idxEndErr = result["value"]["end"]
                 err.errType = result["value"]["labels"][0] # from an observational experience, it is known that Label Studio create different result object for the same region that has different label
                 err.incorrText = result["value"]["text"]
-                #err.corrText = Handler.get_corrected_text(data, result["id"], idx)
+                err.corrText = Helper.get_corrected_text(idx, result["id"])
 
                 err.errTax = Taxonomy()
                 #err.errTax.pos = POS.mapPOS(err.errType, err.incorrText, err.corrText, err.sentOrig)
