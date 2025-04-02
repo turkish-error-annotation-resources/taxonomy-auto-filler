@@ -70,6 +70,9 @@ class Unit(Enum):
                 # todo: the last character of lemma will not be taken into consideration (maybe lemma[0][:-1] ??)
                 """
 
+                corrTxt = corrTxt.lower()
+                incorrTxt = incorrTxt.lower()
+                
                 if len(corrTxt.split()) == 1:
                     lemma = Helper.get_lemmas(corrTxt)
                     lemma = str(lemma)
