@@ -2,9 +2,24 @@ import globals
 import json
 import pandas as pd
 from nltk.tokenize import sent_tokenize
+# for zemberek
+import jpype
+import jpype.imports
+from jpype.types import *
+# Start JVM with Zemberek
+if not jpype.isJVMStarted():
+    jpype.startJVM(classpath = [globals.path_zemberek])
+from zemberek.morphology import TurkishMorphology
+
 
 class Helper:
     """ Helper functions used in main parsing loop """
+
+    __morphology = TurkishMorphology.createWithDefaults()
+
+    @staticmethod
+    def get_morphology():
+        return Helper.__morphology
 
     @staticmethod
     def load_data(path):
@@ -59,4 +74,27 @@ class Helper:
             if sentence_start <= start <= sentence_end or sentence_start <= end <= sentence_end:
                 return sentence.strip(), sentence_start, sentence_end  # return the sentence if it contains the indices
             
-        return "", -1, -1  # Return an empty string if no sentence is found
+        return "", -1, -1  # return an empty string if no sentence is found
+    
+    
+    @staticmethod
+    def get_lemmas(word):
+        """
+        get analysis of an input word using zemberek's morphological analyzer
+        analysis may have more than one result, but one should be chosen
+        heuristic: choose the lemma which has the smallest length
+        !!! better approach -> using morpholocial disambiguator
+        """
+
+        morph = Helper.get_morphology()
+        analysis = morph.analyze(word)
+        lemmas = set()
+        for result in analysis:
+            lemmas.update(result.getLemmas())
+
+        lemmas = list(lemmas)
+        
+        if len(lemmas) == 0: # no analysis
+            return ""
+        else:
+            return min(lemmas, key=len)

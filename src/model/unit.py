@@ -63,16 +63,24 @@ class Unit(Enum):
             case 'KI':
                 return Unit.WORD
             case 'YA':
-                return Unit.NONE
-        """
-        mapping = {
-            'HN': Unit.WORD, # Unit.__mapUnitForHN(incorrText.lower(), corrText.lower()),
-            'BA': Unit.WORD, # Unit.__mapUnitForBA(incorrText.lower(), corrText.lower()),
-            'Dİ': Unit.GRAPHEME,
-            'BH': Unit.WORD, # Unit.__mapUnitForBH(incorrText, corrText, sentOrig),
-            'KI': Unit.WORD,
-            'YA': Unit.WORD # Unit.__mapUnitForYA(incorrText.lower(), corrText.lower())
-        }
+                """
+                spell errors are assumed to be annotated for a single token only
+                if no lemma is found -> WORD
+                if original text starts with the lemma of corrected form, then the error is occured in the affix part
+                # todo: the last character of lemma will not be taken into consideration (maybe lemma[0][:-1] ??)
+                """
 
-        return mapping.get(errType, Unit.NONE)
-        """
+                if len(corrTxt.split()) == 1:
+                    lemma = Helper.get_lemmas(corrTxt)
+                    lemma = str(lemma)
+
+                    if lemma == "":
+                        return Unit.WORD
+                    else:
+                        if incorrTxt.startswith(lemma):
+                            return Unit.AFFIX
+                        # doğru ve yanlış token'da lemma uzunluğu kadar karakteri çıkarıp kalan bölüm eşit ise, o zaman hata köktedir (böyle de olabilir?)
+                        #elif corrTxt[len(lemma[0]):] == incorrTxt[len(lemma[0]):]: 
+                        #    return Unit.LEMMA
+                        else:
+                            return Unit.LEMMA

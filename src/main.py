@@ -32,16 +32,15 @@ def main():
                 err.errType = result["value"]["labels"][0] # from an observational experience, it is known that Label Studio create different result object for the same region that has different label
                 err.incorrText = result["value"]["text"]
                 err.corrText = Helper.get_corrected_text(idx, result["id"])
-
+                
                 err.errTax = Taxonomy()
                 #err.errTax.pos = POS.mapPOS(err.errType, err.incorrText, err.corrText, err.sentOrig)
-                #err.errTax.unit = Unit.mapUnit(err.errType, err.incorrText, err.corrText, err.sentOrig) # bazı hata tiplerinde (YA) unit tespiti yapmak gerekiyor
                 err.errTax.unit = Unit.mapUnit(err.errType, err.corrText, err.incorrText, err.sentOrig)
                 err.errTax.phenomenon = Phenomenon.mapPhenomenon(err.errType, err.corrText, err.incorrText)
                 err.errTax.level = Level.mapLevel(err.errType)
-
+                
                 err.print()
                 errorList.append(err)
-    
+
 if __name__ == "__main__":
     main()
