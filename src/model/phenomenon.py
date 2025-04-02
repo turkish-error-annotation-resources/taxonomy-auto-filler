@@ -1,4 +1,5 @@
 from enum import Enum
+from src import Helper
 
 class Phenomenon(Enum):
     """ Represents <Phenomenon> in the paper https://doi.org/10.1007/s10579-024-09794-0 """
@@ -12,7 +13,44 @@ class Phenomenon(Enum):
     AMBIGUITY = 6
 
     @staticmethod
-    def mapPhenomenon(errType):
+    def mapPhenomenon(errType, corrTxt, incorrTxt):
+        match errType:
+            case 'HN':
+                corrPunct = Helper.extract_punctuation_marks_TR(corrTxt) # list of all punct. marks in the corrected text
+                incorrPunct = Helper.extract_punctuation_marks_TR(incorrTxt) # list of all punct. marks in the original text
+                
+                """
+                heuristical approach:  using th change in the number of punctiation marks
+                if lengths of pnct. marks lists are equal, then there are two options: 
+                    1- at least one element which is different -> MISUSE
+                    2- no different element -> MISORDERING
+                if there are more punct. marks in corrected form than in the original form -> OMISSION
+                if there are less punct. marks in corrected form than in the original form -> ADDITION
+                """
+
+                if len(corrPunct) == len(incorrPunct):
+                    if len(set(corrPunct) - set(incorrPunct)) > 0:
+                        return Phenomenon.MISUSE
+                    else:
+                        return Phenomenon.MISORDERING
+                elif len(corrPunct) > len(incorrPunct):
+                    return Phenomenon.OMISSION
+                elif len(corrPunct) < len(incorrPunct):
+                    return Phenomenon.ADDITION
+                else:
+                    return Phenomenon.NONE
+            case 'BA':
+                return Phenomenon.MISUSE
+            case 'Dİ':
+                return Phenomenon.MISUSE
+            case 'BH':
+                return Phenomenon.MISUSE
+            case 'KI':
+                return Phenomenon.MISUSE
+            case 'YA':
+                return Phenomenon.MISUSE
+
+        """
         mapping = {
         'HN': Phenomenon.MISUSE, #Phenomenon.__mapPhenomenonForHN(incorrText.lower(), corrText.lower()),
         'BA': Phenomenon.MISUSE,
@@ -20,6 +58,7 @@ class Phenomenon(Enum):
         'BH': Phenomenon.MISUSE,
         'KI': Phenomenon.MISUSE,
         'YA': Phenomenon.MISUSE #Phenomenon.__mapPhenomenonForYA(incorrText.strip(), corrText.strip())
-        }
+        }"
+        """
 
-        return mapping.get(errType, Phenomenon.NONE)
+        #return mapping.get(errType, Phenomenon.NONE)

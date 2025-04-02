@@ -3,6 +3,8 @@ import json
 import globals
 from model.error import Error
 from model.taxonomy import Taxonomy
+from model.level import Level
+from model.phenomenon import Phenomenon
 from helper import Helper
 
 
@@ -41,8 +43,8 @@ def main():
                 err.errTax = Taxonomy()
                 #err.errTax.pos = POS.mapPOS(err.errType, err.incorrText, err.corrText, err.sentOrig)
                 #err.errTax.unit = Unit.mapUnit(err.errType, err.incorrText, err.corrText, err.sentOrig) # bazı hata tiplerinde (YA) unit tespiti yapmak gerekiyor
-                #err.errTax.phenomenon = Phenomenon.mapPhenomenon(err.errType, err.incorrText, err.corrText)
-                #err.errTax.level = LinguisticLevel.mapLinguisticLevel(err.errType) # her hata tipi tek bir linguistic level'a map ediyor
+                err.errTax.phenomenon = Phenomenon.mapPhenomenon(err.errType, err.corrText, err.incorrText)
+                err.errTax.level = Level.mapLevel(err.errType)
 
                 err.print()
                 errorList.append(err)
