@@ -1,4 +1,6 @@
 from enum import Enum
+from helper import Helper
+import globals
 
 class Unit(Enum):
     """ Represents <Unit> in the paper https://doi.org/10.1007/s10579-024-09794-0 """
@@ -13,14 +15,42 @@ class Unit(Enum):
     SENTENCE = 7
 
     @staticmethod
-    def mapUnit(errType):
+    def mapUnit(errType, corrTxt, incorrTxt):
+        match errType:
+            case 'HN':
+                """
+                punct. marks in original and corrected texts are extracted
+                symmetric difference between original and corrected texts is checked
+                if there is an apostroph character in symmetric difference OR corrected text is in abbreviation list of TDK -> WORD
+                otherwise -> SENTENCE
+                """
+                corrPunct = Helper.extract_punctuation_marks_TR(corrTxt)
+                incorrPunct = Helper.extract_punctuation_marks_TR(incorrTxt)
+
+                if any(mark in list(set(corrPunct) ^ set(incorrPunct)) for mark in ["'", '´', '`']) or corrTxt in globals.abbr_list_TR:
+                    return Unit.WORD
+                else:
+                    return Unit.SENTENCE
+                
+            case 'BA':
+                return Unit.NONE
+            case 'Dİ':
+                return Unit.NONE
+            case 'BH':
+                return Unit.NONE
+            case 'KI':
+                return Unit.NONE
+            case 'YA':
+                return Unit.NONE
+        """
         mapping = {
-        'HN': Unit.WORD, # Unit.__mapUnitForHN(incorrText.lower(), corrText.lower()),
-        'BA': Unit.WORD, # Unit.__mapUnitForBA(incorrText.lower(), corrText.lower()),
-        'Dİ': Unit.GRAPHEME,
-        'BH': Unit.WORD, # Unit.__mapUnitForBH(incorrText, corrText, sentOrig),
-        'KI': Unit.WORD,
-        'YA': Unit.WORD # Unit.__mapUnitForYA(incorrText.lower(), corrText.lower())
+            'HN': Unit.WORD, # Unit.__mapUnitForHN(incorrText.lower(), corrText.lower()),
+            'BA': Unit.WORD, # Unit.__mapUnitForBA(incorrText.lower(), corrText.lower()),
+            'Dİ': Unit.GRAPHEME,
+            'BH': Unit.WORD, # Unit.__mapUnitForBH(incorrText, corrText, sentOrig),
+            'KI': Unit.WORD,
+            'YA': Unit.WORD # Unit.__mapUnitForYA(incorrText.lower(), corrText.lower())
         }
 
         return mapping.get(errType, Unit.NONE)
+        """
