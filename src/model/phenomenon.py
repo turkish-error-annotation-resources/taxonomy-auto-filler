@@ -1,5 +1,5 @@
 from enum import Enum
-from src import Helper
+from helper import Helper
 
 class Phenomenon(Enum):
     """ Represents <Phenomenon> in the paper https://doi.org/10.1007/s10579-024-09794-0 """
@@ -16,9 +16,6 @@ class Phenomenon(Enum):
     def mapPhenomenon(errType, corrTxt, incorrTxt):
         match errType:
             case 'HN':
-                corrPunct = Helper.extract_punctuation_marks_TR(corrTxt) # list of all punct. marks in the corrected text
-                incorrPunct = Helper.extract_punctuation_marks_TR(incorrTxt) # list of all punct. marks in the original text
-                
                 """
                 heuristical approach:  using th change in the number of punctiation marks
                 if lengths of pnct. marks lists are equal, then there are two options: 
@@ -28,6 +25,9 @@ class Phenomenon(Enum):
                 if there are less punct. marks in corrected form than in the original form -> ADDITION
                 """
 
+                corrPunct = Helper.extract_punctuation_marks_TR(corrTxt) # list of all punct. marks in the corrected text
+                incorrPunct = Helper.extract_punctuation_marks_TR(incorrTxt) # list of all punct. marks in the original text
+                
                 if len(corrPunct) == len(incorrPunct):
                     if len(set(corrPunct) - set(incorrPunct)) > 0:
                         return Phenomenon.MISUSE
