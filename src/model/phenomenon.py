@@ -42,7 +42,41 @@ class Phenomenon(Enum):
             case 'BA':
                 return Phenomenon.MISUSE
             case 'Dİ':
-                return Phenomenon.MISUSE
+                """
+                set operations are used heuristically, it can be improved by different approaches (using character frequency dictionary, etc.)
+                """
+
+                diff_list = list(set(corrTxt) - set(incorrTxt))
+                diff_list2 = list(set(incorrTxt) - set(corrTxt))
+
+                add = 0
+                omm = 0
+                els = 0
+
+                for char in diff_list:
+                    if char in ["İ", "Ü", "Ö", "Ğ", "Ş", "Ç", "i", "ü", "ö", "ğ", "ş", "ç", "j", "î", "Î", "â", "Â"]:
+                        omm += 1
+                    elif char in ["I", "U", "O", "G", "S", "C", "ı", "u", "o", "g", "s", "c", "J", "a", "A"]:
+                        add += 1
+                    else:
+                        els += 1
+
+                for char in diff_list2:
+                    if char in ["İ", "Ü", "Ö", "Ğ", "Ş", "Ç", "i", "ü", "ö", "ğ", "ş", "ç", "j", "î", "Î", "â", "Â"]:
+                        add += 1
+                    elif char in ["I", "U", "O", "G", "S", "C", "ı", "u", "o", "g", "s", "c", "J", "a", "A"]:
+                        omm += 1
+                    else:
+                        els += 1
+
+                if add > 0 and omm > 0:
+                    return Phenomenon.MISUSE
+                elif add > 0:
+                    return Phenomenon.ADDITION
+                elif omm > 0:
+                    return Phenomenon.OMISSION
+                else:
+                    return Phenomenon.NONE
             case 'BH':
                 return Phenomenon.MISUSE
             case 'KI':
