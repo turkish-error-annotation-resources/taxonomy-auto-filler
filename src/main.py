@@ -1,12 +1,11 @@
 import argparse
-import json
 import globals
 from model.error import Error
 from model.taxonomy import Taxonomy
 from model.level import Level
 from model.phenomenon import Phenomenon
+from model.unit import Unit
 from helper import Helper
-
 
 def main():
     parser = argparse.ArgumentParser(description = "Process a file path.")
@@ -15,14 +14,8 @@ def main():
     args = parser.parse_args()
     print(f"Path received: {args.path}")
 
-    try:
-        with open(args.path, 'r') as file:
-            globals.data = json.load(file)
-    except Exception as e:
-        print(f"An unexpected error occurred: {e}")
-        raise ValueError("An unexpected error occurred. ")
-    
-    print("Number of tasks: ", len(globals.data))
+    Helper.load_data(args.path)
+    Helper.load_abbr_list_TR()
 
     errorList = []
     for idx, task in enumerate(globals.data): # for each task in input json data
@@ -43,6 +36,7 @@ def main():
                 err.errTax = Taxonomy()
                 #err.errTax.pos = POS.mapPOS(err.errType, err.incorrText, err.corrText, err.sentOrig)
                 #err.errTax.unit = Unit.mapUnit(err.errType, err.incorrText, err.corrText, err.sentOrig) # bazı hata tiplerinde (YA) unit tespiti yapmak gerekiyor
+                err.errTax.unit = Unit.mapUnit(err.errType, err.corrText, err.incorrText)
                 err.errTax.phenomenon = Phenomenon.mapPhenomenon(err.errType, err.corrText, err.incorrText)
                 err.errTax.level = Level.mapLevel(err.errType)
 
