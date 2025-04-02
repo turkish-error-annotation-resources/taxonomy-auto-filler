@@ -9,7 +9,7 @@ from jpype.types import *
 # Start JVM with Zemberek
 if not jpype.isJVMStarted():
     jpype.startJVM(classpath = [globals.path_zemberek])
-from zemberek.morphology import TurkishMorphology
+from zemberek.morphology import TurkishMorphology # type: ignore
 
 
 class Helper:
