@@ -51,14 +51,12 @@ class Helper:
         """
 
         sentences = sent_tokenize(rawText)
-
-        # find the sentence that contains the indices
-        for sentence in sentences:
+        for sentence in sentences: # find the sentence that contains the indices
             sentence_start = rawText.find(sentence)  # find the start index of the sentence in the original text
             sentence_end = sentence_start + len(sentence)  # calculate the end index of the sentence
 
             # check if the indices are within the current sentence
             if sentence_start <= start <= sentence_end or sentence_start <= end <= sentence_end:
                 return sentence.strip(), sentence_start, sentence_end  # return the sentence if it contains the indices
-
+            
         return "", -1, -1  # Return an empty string if no sentence is found

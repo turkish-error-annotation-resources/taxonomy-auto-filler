@@ -27,7 +27,7 @@ def main():
                 err.rawText = task["data"]["DATA"]
                 err.idxStartErr = result["value"]["start"]
                 err.idxEndErr = result["value"]["end"]
-                err.sentOrig, err.sentIdxStart, err.sentIdxEnd = Helper.get_sentence_errored(err.rawText, err.idxStartErr, err.idxEndErr)
+                err.sentOrig, err.idxStartSent, err.idxEndSent = Helper.get_sentence_errored(err.rawText, err.idxStartErr, err.idxEndErr)
                 #err.sentCorr = Handler.get_corrected_sentence(data, idx, err.rawText, err.sentOrig, err.sentIdxStart, err.sentIdxEnd)
                 err.errType = result["value"]["labels"][0] # from an observational experience, it is known that Label Studio create different result object for the same region that has different label
                 err.incorrText = result["value"]["text"]
@@ -36,7 +36,7 @@ def main():
                 err.errTax = Taxonomy()
                 #err.errTax.pos = POS.mapPOS(err.errType, err.incorrText, err.corrText, err.sentOrig)
                 #err.errTax.unit = Unit.mapUnit(err.errType, err.incorrText, err.corrText, err.sentOrig) # bazı hata tiplerinde (YA) unit tespiti yapmak gerekiyor
-                err.errTax.unit = Unit.mapUnit(err.errType, err.corrText, err.incorrText)
+                err.errTax.unit = Unit.mapUnit(err.errType, err.corrText, err.incorrText, err.sentOrig)
                 err.errTax.phenomenon = Phenomenon.mapPhenomenon(err.errType, err.corrText, err.incorrText)
                 err.errTax.level = Level.mapLevel(err.errType)
 

@@ -15,7 +15,7 @@ class Unit(Enum):
     SENTENCE = 7
 
     @staticmethod
-    def mapUnit(errType, corrTxt, incorrTxt):
+    def mapUnit(errType, corrTxt, incorrTxt, sentOrig):
         match errType:
             case 'HN':
                 """
@@ -45,11 +45,23 @@ class Unit(Enum):
                 else:
                     return Unit.WORD
             case 'Dİ':
-                return Unit.NONE
+                return Unit.GRAPHEME
             case 'BH':
-                return Unit.NONE
+                """
+                if the begining of the sentence -> SENTENCE
+                if more than one token for the original and corrected texts and their lengths are equal -> PHRASE
+                owtherwise -> WORD
+                """
+
+                words = sentOrig.split()
+                if words[0] == incorrTxt:
+                    return Unit.SENTENCE
+                elif (len(incorrTxt.split()) == len(corrTxt.split()) and len(incorrTxt.split()) > 1):
+                    return Unit.PHRASE
+                else:
+                    return Unit.WORD
             case 'KI':
-                return Unit.NONE
+                return Unit.WORD
             case 'YA':
                 return Unit.NONE
         """
