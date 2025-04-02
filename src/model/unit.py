@@ -24,6 +24,7 @@ class Unit(Enum):
                 if there is an apostroph character in symmetric difference OR corrected text is in abbreviation list of TDK -> WORD
                 otherwise -> SENTENCE
                 """
+
                 corrPunct = Helper.extract_punctuation_marks_TR(corrTxt)
                 incorrPunct = Helper.extract_punctuation_marks_TR(incorrTxt)
 
@@ -32,7 +33,17 @@ class Unit(Enum):
                 else:
                     return Unit.SENTENCE
             case 'BA':
-                return Unit.NONE
+                """
+                if any spacing exists in corrected form -> WORD
+                if no spacing exists in the corrected form AND some affixes exist in the corrected form -> AFFIX
+                for all other cases -> WORD
+                """
+
+                corrTxt = corrTxt.lower()
+                if (" " not in corrTxt) and (corrTxt[-3:] in ["dır", "dir", "dur", "dür", "tır", "tir", "tur", "tür", "dan", "den", "tan", "ten"] or corrTxt[-2:] in ["de", "da", "te", "ta"]):
+                    return Unit.AFFIX
+                else:
+                    return Unit.WORD
             case 'Dİ':
                 return Unit.NONE
             case 'BH':
