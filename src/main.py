@@ -25,10 +25,10 @@ def main():
                 err.idLabelStudio = task["id"]
                 err.idData = task["data"]["ID"]
                 err.rawText = task["data"]["DATA"]
-                #err.sentOrig, err.sentIdxStart, err.sentIdxEnd = Handler.extract_sentence(err.rawText, err.idxStart, err.idxEnd)
-                #err.sentCorr = Handler.get_corrected_sentence(data, idx, err.rawText, err.sentOrig, err.sentIdxStart, err.sentIdxEnd)
                 err.idxStartErr = result["value"]["start"]
                 err.idxEndErr = result["value"]["end"]
+                err.sentOrig, err.sentIdxStart, err.sentIdxEnd = Helper.get_sentence_errored(err.rawText, err.idxStartErr, err.idxEndErr)
+                #err.sentCorr = Handler.get_corrected_sentence(data, idx, err.rawText, err.sentOrig, err.sentIdxStart, err.sentIdxEnd)
                 err.errType = result["value"]["labels"][0] # from an observational experience, it is known that Label Studio create different result object for the same region that has different label
                 err.incorrText = result["value"]["text"]
                 err.corrText = Helper.get_corrected_text(idx, result["id"])

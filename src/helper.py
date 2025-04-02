@@ -1,6 +1,7 @@
 import globals
 import json
 import pandas as pd
+from nltk.tokenize import sent_tokenize
 
 class Helper:
     """ Helper functions used in main parsing loop """
@@ -42,3 +43,22 @@ class Helper:
                 globals.abbr_list_TR.append(str(row[0]).lower())
         except Exception as e:
             print(f"Error reading excel file: {e}")
+    
+    @staticmethod
+    def get_sentence_errored(rawText, start, end):
+        """
+        returns the sentence which the errored region is in
+        """
+
+        sentences = sent_tokenize(rawText)
+
+        # find the sentence that contains the indices
+        for sentence in sentences:
+            sentence_start = rawText.find(sentence)  # find the start index of the sentence in the original text
+            sentence_end = sentence_start + len(sentence)  # calculate the end index of the sentence
+
+            # check if the indices are within the current sentence
+            if sentence_start <= start <= sentence_end or sentence_start <= end <= sentence_end:
+                return sentence.strip(), sentence_start, sentence_end  # return the sentence if it contains the indices
+
+        return "", -1, -1  # Return an empty string if no sentence is found
