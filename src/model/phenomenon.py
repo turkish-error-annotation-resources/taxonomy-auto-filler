@@ -1,5 +1,6 @@
 from enum import Enum
 from helper import Helper
+from collections import Counter
 
 class Phenomenon(Enum):
     """ Represents <Phenomenon> in the paper https://doi.org/10.1007/s10579-024-09794-0 """
@@ -82,17 +83,18 @@ class Phenomenon(Enum):
             case 'KI':
                 return Phenomenon.MISUSE
             case 'YA':
-                return Phenomenon.MISUSE
+                """
+                if frequency of each character for both texts are equal -> MISORDERING
+                if length of the original text is greater than the corrected text -> ADDITION
+                if length of the original text is smaller than the corrected text -> OMISSION
+                otherwise -> MISUSE
+                """
 
-        """
-        mapping = {
-        'HN': Phenomenon.MISUSE, #Phenomenon.__mapPhenomenonForHN(incorrText.lower(), corrText.lower()),
-        'BA': Phenomenon.MISUSE,
-        'Dİ': Phenomenon.MISUSE, #Phenomenon.__mapPhenomenonForDI(incorrText, corrText),
-        'BH': Phenomenon.MISUSE,
-        'KI': Phenomenon.MISUSE,
-        'YA': Phenomenon.MISUSE #Phenomenon.__mapPhenomenonForYA(incorrText.strip(), corrText.strip())
-        }"
-        """
-
-        #return mapping.get(errType, Phenomenon.NONE)
+                if (dict(Counter(incorrTxt)) == dict(Counter(corrTxt))):
+                    return Phenomenon.MISORDERING
+                elif len(incorrTxt) > len(corrTxt):
+                    return Phenomenon.ADDITION
+                elif len(incorrTxt) < len(corrTxt):
+                    return Phenomenon.OMISSION
+                else:
+                    return Phenomenon.MISUSE
