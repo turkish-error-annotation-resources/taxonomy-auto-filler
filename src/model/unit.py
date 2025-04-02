@@ -27,11 +27,10 @@ class Unit(Enum):
                 corrPunct = Helper.extract_punctuation_marks_TR(corrTxt)
                 incorrPunct = Helper.extract_punctuation_marks_TR(incorrTxt)
 
-                if any(mark in list(set(corrPunct) ^ set(incorrPunct)) for mark in ["'", '´', '`']) or corrTxt in globals.abbr_list_TR:
+                if any(mark in list(set(corrPunct) ^ set(incorrPunct)) for mark in ["'", '´', '`']) or corrTxt.lower() in globals.abbr_list_TR:
                     return Unit.WORD
                 else:
                     return Unit.SENTENCE
-                
             case 'BA':
                 return Unit.NONE
             case 'Dİ':
