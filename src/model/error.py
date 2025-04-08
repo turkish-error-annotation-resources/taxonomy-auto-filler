@@ -25,6 +25,8 @@ class Error:
         print('errType: ', self.errType)
         print('incorrText: ', self.incorrText)
         print('corrText: ', self.corrText)
+        print('idxStartSent: ', self.idxStartSent)
+        print('idxEndSent: ', self.idxEndSent)
         print('errTax.pos: ', self.errTax.pos)
         print('errTax.unit: ', self.errTax.unit)
         print('errTax.phenomenon: ', self.errTax.phenomenon)
