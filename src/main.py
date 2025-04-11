@@ -5,6 +5,7 @@ from model.taxonomy import Taxonomy
 from model.level import Level
 from model.phenomenon import Phenomenon
 from model.unit import Unit
+from model.pos import POS
 from helper import Helper
 
 def main():
@@ -27,14 +28,14 @@ def main():
                 err.rawText = task["data"]["DATA"]
                 err.idxStartErr = result["value"]["start"]
                 err.idxEndErr = result["value"]["end"]
-                err.sentOrig, err.idxStartSent, err.idxEndSent = Helper.get_sentence_errored(err.rawText, err.idxStartErr, err.idxEndErr)
-                #err.sentCorr = Handler.get_corrected_sentence(data, idx, err.rawText, err.sentOrig, err.sentIdxStart, err.sentIdxEnd)
+                err.sentOrig, err.idxStartSent, err.idxEndSent = Helper.get_sentence_original(err.rawText, err.idxStartErr, err.idxEndErr)
+                err.sentCorr = Helper.get_corrected_sentence(idx, err.sentOrig, err.idxStartSent, err.idxEndSent)
                 err.errType = result["value"]["labels"][0] # from an observational experience, it is known that Label Studio create different result object for the same region that has different label
                 err.incorrText = result["value"]["text"]
                 err.corrText = Helper.get_corrected_text(idx, result["id"])
                 
                 err.errTax = Taxonomy()
-                #err.errTax.pos = POS.mapPOS(err.errType, err.incorrText, err.corrText, err.sentOrig)
+                #err.errTax.pos = POS.mapPOS(err)
                 err.errTax.unit = Unit.mapUnit(err.errType, err.corrText, err.incorrText, err.sentOrig)
                 err.errTax.phenomenon = Phenomenon.mapPhenomenon(err.errType, err.corrText, err.incorrText)
                 err.errTax.level = Level.mapLevel(err.errType)
