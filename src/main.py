@@ -35,7 +35,7 @@ def main():
                 err.corrText = Helper.get_corrected_text(idx, result["id"])
                 
                 err.errTax = Taxonomy()
-                #err.errTax.pos = POS.mapPOS(err)
+                err.errTax.pos = POS.mapPOS(err)
                 err.errTax.unit = Unit.mapUnit(err.errType, err.corrText, err.incorrText, err.sentOrig)
                 err.errTax.phenomenon = Phenomenon.mapPhenomenon(err.errType, err.corrText, err.incorrText)
                 err.errTax.level = Level.mapLevel(err.errType)

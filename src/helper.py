@@ -10,16 +10,27 @@ from jpype.types import *
 if not jpype.isJVMStarted():
     jpype.startJVM(classpath = [globals.path_zemberek])
 from zemberek.morphology import TurkishMorphology # type: ignore
+from zemberek.tokenization import TurkishTokenizer # type: ignore
+from zemberek.tokenization import TurkishSentenceExtractor # type: ignore
 
 
 class Helper:
     """ Helper functions used in main parsing loop """
 
+    __tokenizer = TurkishTokenizer.DEFAULT
     __morphology = TurkishMorphology.createWithDefaults()
+    __extractor = TurkishSentenceExtractor.DEFAULT
 
     @staticmethod
     def get_morphology():
         return Helper.__morphology
+
+    @staticmethod
+    def get_tokenizer():
+        return Helper.__tokenizer
+    
+    def get_extractor():
+        return Helper.__extractor
 
     @staticmethod
     def load_data(path):
@@ -64,8 +75,14 @@ class Helper:
         """
         returns the sentence which the errored region is in
         """
+        # this is deprecated -> using nltk
+        #sentences = sent_tokenize(rawText)
+        
+        extracted_sentences = Helper.get_extractor().fromParagraph(rawText)
+        sentences = []
+        for sentence in extracted_sentences:
+            sentences.append(str(sentence))
 
-        sentences = sent_tokenize(rawText)
         for sentence in sentences: # find the sentence that contains the indices
             sentence_start = rawText.find(sentence)  # find the start index of the sentence in the original text
             sentence_end = sentence_start + len(sentence)  # calculate the end index of the sentence
@@ -75,7 +92,6 @@ class Helper:
                 return sentence.strip(), sentence_start, sentence_end  # return the sentence if it contains the indices
             
         return "", -1, -1  # return an empty string if no sentence is found
-    
     
     @staticmethod
     def get_lemmas(word):
@@ -139,12 +155,6 @@ class Helper:
             if not is_contained:
                 errors_filtered_by_overlapping_span.append(current)
 
-        
-        #if sentOrig == "Son olarak, insanların ülkeleri ve halkına faydalı olabilmesi sadece eğitim hayatlarında başarılı olmasından ibaret değil, belki insanların sıkıntılarının giderilmesi konusunda gece gündüz çalışması da oldukça önemlidir.":
-        #    for error in errors_filtered_by_overlapping_span:
-        #        print(error)
-
-        # sent span -> 1089 & 1309
         # reconstruct the sentence by using corrected forms written by annotators
         offset = 0
         for error in errors_filtered_by_overlapping_span:
@@ -153,12 +163,47 @@ class Helper:
                 start = error["value"]["start"] - idxStartSent + offset
                 end = error["value"]["end"] - idxStartSent + offset
 
-                #if idxStartSent == 1089 and idxEndSent == 1309:
-                    #print("sentOrig -> ", sentOrig)
                 sentOrig = sentOrig[:start] + error["value"]["text"][0] + sentOrig[end:]
                 offset += len(error["value"]["text"][0]) - (error["value"]["end"] - error["value"]["start"])
-
-                #if idxStartSent == 1089 and idxEndSent == 1309:
-                    #print("start:", start, " end:", end, " offset:", offset, " sentOrig:", sentOrig)
                 
-        return sentOrig 
+        return sentOrig
+    
+    @staticmethod
+    def find_sublist_range(lst1, lst2):
+        n, m = len(lst1), len(lst2)
+        for i in range(n - m + 1):
+            if lst1[i:i + m] == lst2:
+                return (i, i + m)
+        return None  # if no match
+
+    @staticmethod
+    def get_POS(sent, corrText):
+        morph = Helper.get_morphology()
+        try:
+            # get analysis and best disambiguation result for the corrected sentence
+            results = morph.analyzeSentence(sent)
+            results_disambiguated = morph.disambiguate(sent, results)
+            best = results_disambiguated.bestAnalysis()
+
+            # get analysis and best disambiguation result for the corrected text
+            results_corrTxt = morph.analyzeSentence(corrText)
+            results_disambiguated_corrTxt = morph.disambiguate(corrText, results_corrTxt)
+            best_corrTxt = results_disambiguated_corrTxt.bestAnalysis()
+
+            surface_forms = [a.surfaceForm() for a in best]
+            surface_forms_corrTxt = [a.surfaceForm() for a in best_corrTxt]
+
+            start, end = Helper.find_sublist_range(surface_forms, surface_forms_corrTxt)
+
+            res = []
+            for idx, token in enumerate(best):
+                if idx in range(start, end):
+                    #print(token.getPos())
+                    posRecord = dict(posPrimary = str(token.getPos()), posSecondary = str(token.getDictionaryItem().secondaryPos), surfaceForm = str(token.surfaceForm()))
+                    #res.append(str(token.getPos()))
+                    res.append(posRecord)
+        except Exception as e:
+            print(e)
+            return []
+        else:
+            return res
