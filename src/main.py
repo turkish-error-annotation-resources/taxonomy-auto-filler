@@ -6,6 +6,7 @@ from model.level import Level
 from model.phenomenon import Phenomenon
 from model.unit import Unit
 from model.pos import POS
+from model.inflectional_feature import InfFeat
 from helper import Helper
 
 def main():
@@ -39,6 +40,7 @@ def main():
                 err.errTax.unit = Unit.mapUnit(err.errType, err.corrText, err.incorrText, err.sentOrig)
                 err.errTax.phenomenon = Phenomenon.mapPhenomenon(err.errType, err.corrText, err.incorrText)
                 err.errTax.level = Level.mapLevel(err.errType)
+                err.errTax.infFeat = InfFeat.mapInfFeat(err)
                 
                 err.print()
                 errorList.append(err)
