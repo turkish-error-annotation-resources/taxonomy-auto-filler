@@ -174,7 +174,7 @@ class Helper:
         for i in range(n - m + 1):
             if lst1[i:i + m] == lst2:
                 return (i, i + m)
-        return None  # if no match
+        return (0, 0)  # if no match
 
     @staticmethod
     def get_POS(sent, corrText):
@@ -190,6 +190,7 @@ class Helper:
             results_disambiguated_corrTxt = morph.disambiguate(corrText, results_corrTxt)
             best_corrTxt = results_disambiguated_corrTxt.bestAnalysis()
 
+            
             surface_forms = [a.surfaceForm() for a in best]
             surface_forms_corrTxt = [a.surfaceForm() for a in best_corrTxt]
 
@@ -203,7 +204,41 @@ class Helper:
                     #res.append(str(token.getPos()))
                     res.append(posRecord)
         except Exception as e:
-            print(e)
+            #print(e)
+            return []
+        else:
+            return res
+        
+    @staticmethod
+    def get_morpholocial_analysis(err):
+        # err.sentCorr, err.corrText
+        morph = Helper.get_morphology()
+        try:
+            # get analysis and best disambiguation result for the corrected sentence
+            results = morph.analyzeSentence(err.sentCorr)
+            results_disambiguated = morph.disambiguate(err.sentCorr, results)
+            best = results_disambiguated.bestAnalysis()
+
+            # get analysis and best disambiguation result for the corrected text
+            results_corrTxt = morph.analyzeSentence(err.corrText)
+            results_disambiguated_corrTxt = morph.disambiguate(err.corrText, results_corrTxt)
+            best_corrTxt = results_disambiguated_corrTxt.bestAnalysis()
+
+            surface_forms = [a.surfaceForm() for a in best]
+            surface_forms_corrTxt = [a.surfaceForm() for a in best_corrTxt]
+
+            start, end = Helper.find_sublist_range(surface_forms, surface_forms_corrTxt)
+
+            res = []
+            for idx, token in enumerate(best):
+                if idx in range(start, end):
+                    #print(token.getPos())
+                    #posRecord = dict(posPrimary = str(token.getPos()), posSecondary = str(token.getDictionaryItem().secondaryPos), surfaceForm = str(token.surfaceForm()))
+                    #res.append(str(token.getPos()))
+                    #res.append(posRecord)
+                    res.append(token)
+        except Exception as e:
+            #print(e)
             return []
         else:
             return res

@@ -27,9 +27,11 @@ class Error:
         print('corrText: ', self.corrText)
         print('idxStartSent: ', self.idxStartSent)
         print('idxEndSent: ', self.idxEndSent)
+        """
         print('errTax.pos: ', self.errTax.pos)
         print('errTax.unit: ', self.errTax.unit)
         print('errTax.phenomenon: ', self.errTax.phenomenon)
         print('errTax.level: ', self.errTax.level)
+        """
         print('errTax.infFeat: ', self.errTax.infFeat)
         print()
