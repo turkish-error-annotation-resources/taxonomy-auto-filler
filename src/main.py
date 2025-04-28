@@ -9,6 +9,8 @@ from model.pos import POS
 from model.inflectional_feature import InfFeat
 from helper import Helper
 
+import csv
+
 def main():
     parser = argparse.ArgumentParser(description = "Process a file path.")
     parser.add_argument("path", help = "Path to the Label Studio's json output/export file ")
@@ -18,6 +20,8 @@ def main():
 
     Helper.load_data(args.path)
     Helper.load_abbr_list_TR()
+
+    #sentence_pairs = []
 
     errorList = []
     for idx, task in enumerate(globals.data): # for each task in input json data
@@ -35,6 +39,8 @@ def main():
                 err.incorrText = result["value"]["text"]
                 err.corrText = Helper.get_corrected_text(idx, result["id"])
                 
+                #sentence_pairs.append((err.idData, err.sentOrig, err.sentCorr))
+
                 err.errTax = Taxonomy()
                 err.errTax.pos = POS.mapPOS(err)
                 err.errTax.unit = Unit.mapUnit(err.errType, err.corrText, err.incorrText, err.sentOrig)
@@ -44,6 +50,19 @@ def main():
                 
                 err.print()
                 errorList.append(err)
+    """
+    #for pair in sentence_pairs:
+        #print(pair)
+    
+    unique_pairs = set(sentence_pairs)
+
+    # Write to a CSV file
+    with open("parallel_data_Anna_389_503.csv", "w", newline="", encoding="utf-8") as csvfile:
+        writer = csv.writer(csvfile)
+        writer.writerow(["Id", "Original Sentence", "Corrected Sentence"])  # Header
+        for id, original, corrected in unique_pairs:
+            writer.writerow([id, original, corrected])
+    """
 
 if __name__ == "__main__":
     main()
