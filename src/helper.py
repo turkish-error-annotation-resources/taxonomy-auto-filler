@@ -13,6 +13,9 @@ from zemberek.morphology import TurkishMorphology # type: ignore
 from zemberek.tokenization import TurkishTokenizer # type: ignore
 from zemberek.tokenization import TurkishSentenceExtractor # type: ignore
 
+import functools
+import Levenshtein
+
 
 class Helper:
     """ Helper functions used in main parsing loop """
@@ -242,3 +245,43 @@ class Helper:
             return []
         else:
             return res
+
+    # !!! not used for now !!!
+    @staticmethod
+    def morph_align_by_levenshtein(morphemes, word):
+        
+        @functools.lru_cache(maxsize = None)
+        def dp(m_idx, w_idx):
+            
+            # Eğer morfemler de kelime de bitti: Tam hizalama
+            if m_idx == len(morphemes) and w_idx == len(word):
+                return [], 0
+            
+            options = []
+
+            # 1. Morfem varsa ve segment eşleştirilebilirse
+            if m_idx < len(morphemes):
+                
+                morph = morphemes[m_idx]
+                for end in range(w_idx + 1, len(word) + 1):# 1 - 7 -> 2 - 7 -> 3 - 7
+                    segment = word[w_idx:end] # y -> '' -> ''
+                    dist = Levenshtein.distance(morph, segment) # 2 -> 3 ->
+                    sub_align, sub_cost = dp(m_idx + 1, end)
+                    options.append(([(morph, segment, dist)] + sub_align, dist + sub_cost))
+                    #print("1 ->", options[len(options)-1])
+
+                # 2. Morfemi atla (boş eşleşme) — buna küçük bir ceza ekle (örneğin 1)
+                sub_align, sub_cost = dp(m_idx + 1, w_idx)
+                options.append(([(morph, "", len(morph))] + sub_align, len(morph) + sub_cost))
+                #print("2 ->", options[len(options)-1])
+
+            # 3. Kelimede segment kaldıysa ama morfem yoksa — kelimeyi atla
+            if w_idx < len(word):
+                sub_align, sub_cost = dp(m_idx, w_idx + 1)
+                options.append(([(None, word[w_idx], 1)] + sub_align, 1 + sub_cost))
+                #print("3 ->", options[len(options)-1])
+
+            # En düşük maliyetli seçeneği döndür
+            return min(options, key=lambda x: x[1])
+
+        return dp(0, 0)
