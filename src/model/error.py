@@ -29,12 +29,11 @@ class Error:
         print('corrText: ', self.corrText)
         print('idxStartSent: ', self.idxStartSent)
         print('idxEndSent: ', self.idxEndSent)
-        """
+        
         print('errTax.pos: ', self.errTax.pos)
         print('errTax.unit: ', self.errTax.unit)
         print('errTax.phenomenon: ', self.errTax.phenomenon)
         print('errTax.level: ', self.errTax.level)
-        """
-        print('errTax.infFeat: ', self.errTax.infFeat)
-        print('errTax.infFeatCorrectedForm: ', self.errInfFeatsForCorrectedForm)
+        #print('errTax.infFeatCorrectedForm: ', self.errInfFeatsForCorrectedForm)
+        print('errTax.infFeat: ', [{k: v for k, v in d.items() if v is not None} for d in self.errTax.infFeat]) # to show attributes only have values
         print()
