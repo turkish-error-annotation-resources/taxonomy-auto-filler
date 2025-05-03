@@ -1,7 +1,7 @@
 class Error:
     """ Represents <Error> in the paper https://doi.org/10.1007/s10579-024-09794-0 """
 
-    def __init__(self, idLabelStudio = 0, idData = 0, rawText = '', sentOrig = '', sentCorr = '', idxStartErr = 0, idxEndErr = 0, errType = '', incorrText = '', corrText = '', idxStartSent = 0, idxEndSent = 0, errTax = None):
+    def __init__(self, idLabelStudio = 0, idData = 0, rawText = '', sentOrig = '', sentCorr = '', idxStartErr = 0, idxEndErr = 0, errType = '', incorrText = '', corrText = '', idxStartSent = 0, idxEndSent = 0, errTax = None, errInfFeatsForCorrectedForm = []):
         self.idLabelStudio = idLabelStudio # data[0]["id"] -> id that Label Studio assigned to task (text)
         self.idData = idData # data[0]["data"]["ID"] -> id that is coming from the data itself (per text)
         self.rawText = rawText # data[0]["data"]["DATA"] -> raw text of task
@@ -15,6 +15,8 @@ class Error:
         self.idxStartSent = idxStartSent # start idx of incorrect sentence that involves the error
         self.idxEndSent = idxEndSent # end idx of incorrect sentence that involves the error
         self.errTax = errTax # taxonomic representation of the error
+        self.errInfFeatsForCorrectedForm = errInfFeatsForCorrectedForm # inflectional features for corrected form
+
 
     def print(self):
         print('idData: ', self.idData)
@@ -34,4 +36,5 @@ class Error:
         print('errTax.level: ', self.errTax.level)
         """
         print('errTax.infFeat: ', self.errTax.infFeat)
+        print('errTax.infFeatCorrectedForm: ', self.errInfFeatsForCorrectedForm)
         print()

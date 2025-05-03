@@ -46,7 +46,7 @@ def main():
                 err.errTax.unit = Unit.mapUnit(err.errType, err.corrText, err.incorrText, err.sentOrig)
                 err.errTax.phenomenon = Phenomenon.mapPhenomenon(err.errType, err.corrText, err.incorrText)
                 err.errTax.level = Level.mapLevel(err.errType)
-                err.errTax.infFeat = InfFeat.mapInfFeat(err)
+                err.errInfFeatsForCorrectedForm, err.errTax.infFeat = InfFeat.mapInfFeat(err)
                 
                 err.print()
                 errorList.append(err)
