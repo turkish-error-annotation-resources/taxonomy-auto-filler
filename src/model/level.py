@@ -4,7 +4,7 @@ class Level(Enum):
     """ Represents <Linguistic Level> in the paper https://doi.org/10.1007/s10579-024-09794-0 """
 
     NONE = 0
-    PHONOLOGY = 1
+    MORPHOPHONOLOGY = 1
     ORTHOGRAPHY = 2
     GRAMMAR = 3
     SEMANTICS = 4
@@ -21,14 +21,14 @@ class Level(Enum):
         'BH': Level.ORTHOGRAPHY, # BÜYÜK HARF (CAPITALIZATION)
         'KI': Level.ORTHOGRAPHY, # KISALTMA (ABBREVIATION)
         'YA': Level.ORTHOGRAPHY, # YAZIM (SPELLING)
-        'ÜzY': Level.PHONOLOGY, # ÜNSÜZ YUMUŞAMASI (CONSONANT VOICING)
-        'ÜU': Level.PHONOLOGY, # ÜNLÜ UYUMU (VOWEL HARMONY)
-        'ÜDü': Level.PHONOLOGY, # ÜNLÜ DÜŞMESİ (VOWEL DROPPING)
-        'KH': Level.PHONOLOGY, # KAYNAŞTIRMA HARFİ (BUFFET LETTER)
-        'ÜzB': Level.PHONOLOGY, # ÜNSÜZ BENZEŞMESİ (CONSONANT ASSIMILIATION)
-        'ÜDa': Level.PHONOLOGY, # ÜNLÜ DARALMASI (VOWEL NARROWING)
-        'ÜT': Level.PHONOLOGY, # ÜNLÜ TÜREMESİ (?)
-        'ÜzT': Level.PHONOLOGY # ÜNSÜZ TÜREMESİ (CONSONANT DOUBLING)
+        'ÜzY': Level.MORPHOPHONOLOGY, # ÜNSÜZ YUMUŞAMASI (CONSONANT VOICING)
+        'ÜU': Level.MORPHOPHONOLOGY, # ÜNLÜ UYUMU (VOWEL HARMONY)
+        'ÜDü': Level.MORPHOPHONOLOGY, # ÜNLÜ DÜŞMESİ (VOWEL DROPPING)
+        'KH': Level.MORPHOPHONOLOGY, # KAYNAŞTIRMA HARFİ (BUFFET LETTER)
+        'ÜzB': Level.MORPHOPHONOLOGY, # ÜNSÜZ BENZEŞMESİ (CONSONANT ASSIMILIATION)
+        'ÜDa': Level.MORPHOPHONOLOGY, # ÜNLÜ DARALMASI (VOWEL NARROWING)
+        'ÜT': Level.MORPHOPHONOLOGY, # ÜNLÜ TÜREMESİ (?)
+        'ÜzT': Level.MORPHOPHONOLOGY # ÜNSÜZ TÜREMESİ (CONSONANT DOUBLING)
         }
         
         return mapping.get(errType, Level.NONE)
