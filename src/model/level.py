@@ -15,12 +15,20 @@ class Level(Enum):
     @staticmethod
     def mapLevel(errType):
         mapping = {
-        'HN': Level.ORTHOGRAPHY,
-        'BA': Level.ORTHOGRAPHY,
-        'Dİ': Level.ORTHOGRAPHY,
-        'BH': Level.ORTHOGRAPHY,
-        'KI': Level.ORTHOGRAPHY,
-        'YA': Level.ORTHOGRAPHY
+        'HN': Level.ORTHOGRAPHY, # HATALI NOKTALAMA (PUNCTUATION)
+        'BA': Level.ORTHOGRAPHY, # BİTİŞİK-AYRI (SPACING)
+        'Dİ': Level.ORTHOGRAPHY, # DİYAKRİTİK (DIACTRIC)
+        'BH': Level.ORTHOGRAPHY, # BÜYÜK HARF (CAPITALIZATION)
+        'KI': Level.ORTHOGRAPHY, # KISALTMA (ABBREVIATION)
+        'YA': Level.ORTHOGRAPHY, # YAZIM (SPELLING)
+        'ÜzY': Level.PHONOLOGY, # ÜNSÜZ YUMUŞAMASI (CONSONANT VOICING)
+        'ÜU': Level.PHONOLOGY, # ÜNLÜ UYUMU (VOWEL HARMONY)
+        'ÜDü': Level.PHONOLOGY, # ÜNLÜ DÜŞMESİ (VOWEL DROPPING)
+        'KH': Level.PHONOLOGY, # KAYNAŞTIRMA HARFİ (BUFFET LETTER)
+        'ÜzB': Level.PHONOLOGY, # ÜNSÜZ BENZEŞMESİ (CONSONANT ASSIMILIATION)
+        'ÜDa': Level.PHONOLOGY, # ÜNLÜ DARALMASI (VOWEL NARROWING)
+        'ÜT': Level.PHONOLOGY, # ÜNLÜ TÜREMESİ (?)
+        'ÜzT': Level.PHONOLOGY # ÜNSÜZ TÜREMESİ (CONSONANT DOUBLING)
         }
         
         return mapping.get(errType, Level.NONE)
