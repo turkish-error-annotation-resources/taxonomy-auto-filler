@@ -36,8 +36,8 @@ class InfFeat(Enum):
         resForCorrectedForm = []
         resForErroredMorphemes = []
         for analysis in analysisList:
-            infFeatsCorrectedForm = dict(aspect = None, case = None, definite = None, degree = None, evident = None, mood = None, number = None, person = None, polarity = None, tense = None, verbform = None, voice = None)
-            infFeats = dict(aspect = None, case = None, definite = None, degree = None, evident = None, mood = None, number = None, person = None, polarity = None, tense = None, verbform = None, voice = None, expAttr1_redundantSuffix = None)
+            infFeatsCorrectedForm = dict(aspect = None, case = None, definite = None, degree = None, evident = None, mood = None, number = None, person = None, polarity = None, tense = None, verbform = None, voice = None, expAttr1_redundantSuffix = None, expAttr2_poss = None)
+            infFeats = dict(aspect = None, case = None, definite = None, degree = None, evident = None, mood = None, number = None, person = None, polarity = None, tense = None, verbform = None, voice = None, expAttr1_redundantSuffix = None, expAttr2_poss = None)
             
             analysisPos = str(analysis.getPos())
             analysisFormatLong = str(analysis.formatLong()) # eg. "düşecekti" -> düşmek:Verb] düş:Verb+ecek:Fut+ti:Past+A3sg
@@ -226,6 +226,22 @@ class InfFeat(Enum):
             else:
                 infFeatsCorrectedForm["voice"] = None
             
+            # Possessiveness (eg. çantam, çantası, çantaları, etc.) -> this is handled in inf_feat instead of lexical because in Turkish possessivness is obtained by inflectional feature
+            if (":P1sg" in analysisFormatLong):
+                infFeatsCorrectedForm["expAttr2_poss"] = "FirstPersonSingularPossessive"
+            elif (":P2sg" in analysisFormatLong):
+                infFeatsCorrectedForm["expAttr2_poss"] = "SecondPersonSingularPossessive"
+            elif (":P3sg" in analysisFormatLong):
+                infFeatsCorrectedForm["expAttr2_poss"] = "ThirdPersonSingularPossessive"
+            elif (":P1pl" in analysisFormatLong):
+                infFeatsCorrectedForm["expAttr2_poss"] = "FirstPersonPluralPossessive"
+            elif (":P2pl" in analysisFormatLong):
+                infFeatsCorrectedForm["expAttr2_poss"] = "SecondPersonPluralPossessive"
+            elif (":P3pl" in analysisFormatLong):
+                infFeatsCorrectedForm["expAttr2_poss"] = "ThirdPersonPluralPossessive"
+            else:
+                infFeatsCorrectedForm["expAttr2_poss"] = None
+
             resForCorrectedForm.append(infFeatsCorrectedForm)
             # --- --- --- --- --- --- --- --- --- --- --- --- ---
             
@@ -459,6 +475,22 @@ class InfFeat(Enum):
                     # expAttr1_redundantSuffix
                     if any("REDUNDANT_SUFFIX" in tag for tag in erroredMorphemeList):
                         infFeats["expAttr1_redundantSuffix"] = "True"
+                    
+                    # Possessiveness (eg. çantam, çantası, çantaları, etc.) -> this is handled in inf_feat instead of lexical because in Turkish possessivness is obtained by inflectional feature
+                    if any(":P1sg" in tag for tag in erroredMorphemeList) and (":P1sg" in analysisFormatLong):
+                        infFeats["expAttr2_poss"] = "FirstPersonSingularPossessive"
+                    elif any(":P2sg" in tag for tag in erroredMorphemeList) and (":P2sg" in analysisFormatLong):
+                        infFeats["expAttr2_poss"] = "SecondPersonSingularPossessive"
+                    elif any(":P3sg" in tag for tag in erroredMorphemeList) and (":P3sg" in analysisFormatLong):
+                        infFeats["expAttr2_poss"] = "ThirdPersonSingularPossessive"
+                    elif any(":P1pl" in tag for tag in erroredMorphemeList) and (":P1pl" in analysisFormatLong):
+                        infFeats["expAttr2_poss"] = "FirstPersonPluralPossessive"
+                    elif any(":P2pl" in tag for tag in erroredMorphemeList) and (":P2pl" in analysisFormatLong):
+                        infFeats["expAttr2_poss"] = "SecondPersonPluralPossessive"
+                    elif any(":P3pl" in tag for tag in erroredMorphemeList) and (":P3pl" in analysisFormatLong):
+                        infFeats["expAttr2_poss"] = "ThirdPersonPluralPossessive"
+                    else:
+                        infFeats["expAttr2_poss"] = None
 
                     resForErroredMorphemes.append(infFeats)
                     # --- --- --- --- --- --- --- --- --- --- --- --- ---

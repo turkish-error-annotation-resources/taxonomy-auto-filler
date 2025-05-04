@@ -6,9 +6,9 @@ class LexFeat(Enum):
 
     NONE = 'None'
     # not applicable for Turkish
-    POSS = 'Possessive' # ???
-    OTHER_ABBR = 'Abbreviation' # ???
-    OTHER_TYPO = 'Typo' # ???
+    POSS = 'Possessive' # this feature is detected as inflectional feature in Turkish (expanded feature!)
+    OTHER_ABBR = 'Abbreviation' # mapped to "KI" directly
+    OTHER_TYPO = 'Typo' # mapped to "YA" directly
     OTHER_FOREIGN = 'Foreign'
     OTHER_EXTPOS = 'ExternalPOS'
     # applicable for Turkish
