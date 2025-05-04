@@ -36,4 +36,5 @@ class Error:
         print('errTax.level: ', self.errTax.level)
         #print('errTax.infFeatCorrectedForm: ', self.errInfFeatsForCorrectedForm)
         print('errTax.infFeat: ', [{k: v for k, v in d.items() if v is not None} for d in self.errTax.infFeat]) # to show attributes only have values
+        print('errTax.lexFeat: ',self.errTax.lexFeat)
         print()

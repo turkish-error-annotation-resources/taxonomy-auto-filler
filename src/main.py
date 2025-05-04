@@ -7,6 +7,7 @@ from model.phenomenon import Phenomenon
 from model.unit import Unit
 from model.pos import POS
 from model.inflectional_feature import InfFeat
+from model.lexical_feature import LexFeat
 from helper import Helper
 
 import csv
@@ -47,6 +48,7 @@ def main():
                 err.errTax.phenomenon = Phenomenon.mapPhenomenon(err.errType, err.corrText, err.incorrText)
                 err.errTax.level = Level.mapLevel(err.errType)
                 err.errInfFeatsForCorrectedForm, err.errTax.infFeat = InfFeat.mapInfFeat(err)
+                err.errTax.lexFeat = LexFeat.mapLexFeat(err)
                 
                 err.print()
                 errorList.append(err)
