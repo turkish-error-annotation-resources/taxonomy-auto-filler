@@ -28,7 +28,8 @@ class InfFeat(Enum):
     VERBFORM = 'VerbForm'
     VOICE = 'Voice'
 
-    
+    #todo: is enum type necesssary?
+
     @staticmethod
     def mapInfFeat(err):
         analysisList = Helper.get_morpholocial_analysis(err)
@@ -43,6 +44,7 @@ class InfFeat(Enum):
             analysisFormatLong = str(analysis.formatLong()) # eg. "düşecekti" -> düşmek:Verb] düş:Verb+ecek:Fut+ti:Past+A3sg
             analysisSurfaceForm = str(analysis.surfaceForm()) # eg. "düşecekti"
             
+            err.morphAnalysisFormatLong.append(analysisFormatLong) # to be used in lexical feature detection
 
             # --- --- --- DETECTION FOR CORRECTED FORM --- --- ---
             # Aspect
