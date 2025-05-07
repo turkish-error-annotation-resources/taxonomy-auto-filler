@@ -13,46 +13,56 @@ from helper import Helper
 import csv
 
 def main():
+    # to enable running the code with the "path" parameter which is used for Label Studio's json output/export file
     parser = argparse.ArgumentParser(description = "Process a file path.")
     parser.add_argument("path", help = "Path to the Label Studio's json output/export file ")
     
     args = parser.parse_args()
-    print(f"Path received: {args.path}")
+    if globals.debug:
+        print(f"Path received: {args.path}")
 
-    Helper.load_data(args.path)
-    Helper.load_abbr_list_TR()
+    Helper.load_data(args.path) # loading input file (Label Studio's json output/export file)
+    Helper.load_abbr_list_TR() # loading TDK's abbreviation list into globals.abbr_list_TR list to be used in Unit detection for HN (PUNCTUATION)
 
-    #sentence_pairs = []
+    #sentence_pairs = [] # for parallel data extraction
 
     errorList = []
     for idx, task in enumerate(globals.data): # for each task in input json data
-        for result in task["annotations"][0]["result"]: # annotators were informed that they should create only one "annotation" object in Label Studio
+        for result in task["annotations"][0]["result"]: # annotators were informed that they should create only one "annotation" object in Label Studio (task["annotations"][0] usage is secured because of this assumption)
             if result["type"] == "labels": # there are two types of results: "labels" (contains error type) and "textarea" (contains corrected form)
+                # creating an Error instance and filling the properties
                 err = Error()
-                err.idLabelStudio = task["id"]
-                err.idData = task["data"]["ID"]
-                err.rawText = task["data"]["DATA"]
-                err.idxStartErr = result["value"]["start"]
-                err.idxEndErr = result["value"]["end"]
-                err.sentOrig, err.idxStartSent, err.idxEndSent = Helper.get_sentence_original(err.rawText, err.idxStartErr, err.idxEndErr)
-                err.sentCorr = Helper.get_corrected_sentence(idx, err.sentOrig, err.idxStartSent, err.idxEndSent)
-                err.errType = result["value"]["labels"][0] # from an observational experience, it is known that Label Studio create different result object for the same region that has different label
-                err.incorrText = result["value"]["text"]
-                err.corrText = Helper.get_corrected_text(idx, result["id"])
+                err.idLabelStudio = task["id"] # id that Label Studio assigned to task (text)
+                err.idData = task["data"]["ID"] # id that is coming from the data itself (per text)
+                err.rawText = task["data"]["DATA"] # raw text of task
+                err.idxStartErr = result["value"]["start"] # index that the error starts
+                err.idxEndErr = result["value"]["end"] # index that the error starts
+                err.sentOrig, err.idxStartSent, err.idxEndSent = Helper.get_sentence_original(err.rawText, err.idxStartErr, err.idxEndErr) # sentence that the error is observed in
+                err.sentCorr = Helper.get_corrected_sentence(idx, err.sentOrig, err.idxStartSent, err.idxEndSent) # reconstructed sentence by corrections
+                err.errType = result["value"]["labels"][0] # type of the error (from an observational experience, it is known that Label Studio create different result object for the same region that has different label)
+                err.incorrText = result["value"]["text"] # incorrect text
+                err.corrText = Helper.get_corrected_text(idx, result["id"]) # corrected text
                 
-                #sentence_pairs.append((err.idData, err.sentOrig, err.sentCorr))
+                #sentence_pairs.append((err.idData, err.sentOrig, err.sentCorr)) # for parallel data extraction
 
+                # taxonomy related features
                 err.errTax = Taxonomy()
                 err.errTax.pos = POS.mapPOS(err)
-                err.errTax.unit = Unit.mapUnit(err.errType, err.corrText, err.incorrText, err.sentOrig)
-                err.errTax.phenomenon = Phenomenon.mapPhenomenon(err.errType, err.corrText, err.incorrText)
-                err.errTax.level = Level.mapLevel(err.errType)
-                err.errInfFeatsForCorrectedForm, err.errTax.infFeat = InfFeat.mapInfFeat(err)
+                err.errTax.unit = Unit.mapUnit(err)
+                err.errTax.phenomenon = Phenomenon.mapPhenomenon(err)
+                err.errTax.level = Level.mapLevel(err)
+                err.errTax.infFeat = InfFeat.mapInfFeat(err)
                 err.errTax.lexFeat = LexFeat.mapLexFeat(err)
                 
-                err.print()
                 errorList.append(err)
+
+                if globals.debug:
+                    err.print(["HN", "BA", "Dİ", "BH", "KI", "YA"])
+                    err.print(["ÜzY", "ÜU", "ÜDü", "KH", "ÜzB", "ÜDa", "ÜzT"])
+                    #err.print(["KH"])
+                
     """
+    # for parallel data extraction
     #for pair in sentence_pairs:
         #print(pair)
     

@@ -126,9 +126,11 @@ class LexFeat(Enum):
         lexFeats = dict(other_abbr = None, other_typo = None, pronType = None, numType = None, reflex = None)
         resLexFeat = []
 
+        # ABBREVIATION
         if err.errType == 'KI':
             lexFeats["other_abbr"] = True
             resLexFeat.append(lexFeats)
+        # SPELLING
         elif err.errType == 'YA':
             lexFeats["other_typo"] = True
             resLexFeat.append(lexFeats)

@@ -32,8 +32,10 @@ class POS(Enum):
     @staticmethod
     def mapPOS(err):
         match err.errType:
+            # PUNCTUATION
             case 'HN':
                 return [POS.PUNCT]
+            #  OTHERS
             case _:
                 posList = Helper.get_POS(err.sentCorr, err.corrText)
                 

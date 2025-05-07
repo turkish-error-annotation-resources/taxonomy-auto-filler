@@ -3,17 +3,17 @@ from enum import Enum
 class Level(Enum):
     """ Represents <Linguistic Level> in the paper https://doi.org/10.1007/s10579-024-09794-0 """
 
-    NONE = 0
-    MORPHOPHONOLOGY = 1
-    ORTHOGRAPHY = 2
-    GRAMMAR = 3
-    SEMANTICS = 4
-    PRAGMATICS = 5
-    DISCOURSE = 6
-    SOCIOLINGUISTIC = 7
+    NONE = 'None'
+    MORPHOPHONOLOGY = 'Morphophonology'
+    ORTHOGRAPHY = 'Orthograpy'
+    GRAMMAR = 'Grammar'
+    SEMANTICS = 'Semantics'
+    PRAGMATICS = 'Pragmatics'
+    DISCOURSE = 'Discourse'
+    SOCIOLINGUISTIC = 'Sociolinguistic'
 
     @staticmethod
-    def mapLevel(errType):
+    def mapLevel(err):
         mapping = {
         'HN': Level.ORTHOGRAPHY, # HATALI NOKTALAMA (PUNCTUATION)
         'BA': Level.ORTHOGRAPHY, # BİTİŞİK-AYRI (SPACING)
@@ -27,8 +27,7 @@ class Level(Enum):
         'KH': Level.MORPHOPHONOLOGY, # KAYNAŞTIRMA HARFİ (BUFFET LETTER)
         'ÜzB': Level.MORPHOPHONOLOGY, # ÜNSÜZ BENZEŞMESİ (CONSONANT ASSIMILIATION)
         'ÜDa': Level.MORPHOPHONOLOGY, # ÜNLÜ DARALMASI (VOWEL NARROWING)
-        'ÜT': Level.MORPHOPHONOLOGY, # ÜNLÜ TÜREMESİ (?)
         'ÜzT': Level.MORPHOPHONOLOGY # ÜNSÜZ TÜREMESİ (CONSONANT DOUBLING)
         }
         
-        return mapping.get(errType, Level.NONE)
+        return mapping.get(err.errType, Level.NONE)

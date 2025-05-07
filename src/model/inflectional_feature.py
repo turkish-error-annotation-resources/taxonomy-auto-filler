@@ -247,7 +247,12 @@ class InfFeat(Enum):
             resForCorrectedForm.append(infFeatsCorrectedForm)
             # --- --- --- --- --- --- --- --- --- --- --- --- ---
             
-            if (err.errType == 'BA' and err.errTax.unit == Unit.AFFIX) or (err.errType == 'YA' and err.errTax.unit != Unit.LEMMA):
+            if (err.errType == 'BA' and err.errTax.unit == Unit.AFFIX) or \
+                (err.errType == 'YA' and err.errTax.unit == Unit.AFFIX) or \
+                (err.errType == 'ÜzY' and err.errTax.unit == Unit.AFFIX) or \
+                (err.errType == 'ÜU') or \
+                (err.errType == 'KH') or \
+                (err.errType == 'ÜzB'):
                 # --- --- --- DETECTION FOR MISTAKEN MORPHEME --- --- ---
                 morphemeList = [str(m) for m in analysis.getMorphemes()] # eg. ['Verb:Verb', 'Future:Fut', 'PastTense:Past', 'ThirdPersonSingular:A3sg']
                 morphemeSurfaceList = [m.surface for m in analysis.getMorphemeDataList()] # eg. ['düş', 'ecek', 'ti', '']
@@ -497,4 +502,4 @@ class InfFeat(Enum):
                     resForErroredMorphemes.append(infFeats)
                     # --- --- --- --- --- --- --- --- --- --- --- --- ---
 
-        return resForCorrectedForm, resForErroredMorphemes
+        return resForErroredMorphemes

@@ -18,11 +18,12 @@ import Levenshtein
 
 
 class Helper:
-    """ Helper functions used in main parsing loop """
+    """ Helper static functions """
 
     __tokenizer = TurkishTokenizer.DEFAULT
     __morphology = TurkishMorphology.createWithDefaults()
     __extractor = TurkishSentenceExtractor.DEFAULT
+
 
     @staticmethod
     def get_morphology():
@@ -32,55 +33,48 @@ class Helper:
     def get_tokenizer():
         return Helper.__tokenizer
     
+    @staticmethod
     def get_extractor():
+        """
+        used in Helper.get_sentence_original()
+        """
         return Helper.__extractor
-
+ 
     @staticmethod
     def load_data(path):
+        """
+        loading Label Studio's json output/export file given as a path
+        used in main
+        """
         try:
             with open(path, 'r') as file:
                 globals.data = json.load(file)
         except Exception as e:
             print(f"An unexpected error occurred: {e}")
-            raise ValueError("An unexpected error occurred. ")
+            raise ValueError("An unexpected error occurred.")
         
         if globals.debug:
-            print("Number of tasks: ", len(globals.data))
-
-    @staticmethod
-    def get_corrected_text(idx, resultId):
-        """ takes index (task id) and result (annotation) id to return the corrected form for the error """
+            print("Number of tasks in the input file: ", len(globals.data))
         
-        for res in globals.data[idx]["annotations"][0]["result"]:
-            if res["id"] == resultId and res["type"] == "textarea":
-                return res["value"]["text"][0]
-    
-    @staticmethod
-    def extract_punctuation_marks_TR(text):
-        """ finds and returns all punctiation marks in the input text as a list """
-
-        punctiation_marks_TR = ['.', ',', ':', ';', '?', '!', '/' '\'', '-', '—', '…', '(', ')', '[', ']', '"', "'", "`", "´" 'ʺ'] # 17 punctioation marks in Turkish defined by TDK (plus ` and ´)
-        return [char for char in text if char in punctiation_marks_TR]
-    
     @staticmethod
     def load_abbr_list_TR():
-        """ reads and get all abbreviations defined by TDK from the abbr_list_tr.xlsx file """
-
+        """ 
+        reads and get all abbreviations defined by TDK from the abbr_list_tr.xlsx file and loads globals.abbr_list_TR list
+        used in main
+        """
         try:
             df = pd.read_excel("./res/abbr_list_tr.xlsx")
             for row in df.values.tolist():
                 globals.abbr_list_TR.append(str(row[0]).lower())
         except Exception as e:
-            print(f"Error reading excel file: {e}")
-    
+            print(f"An unexpected error occurred: {e}")
+
     @staticmethod
     def get_sentence_original(rawText, start, end):
         """
         returns the sentence which the errored region is in
+        used in main
         """
-        # this is deprecated -> using nltk
-        #sentences = sent_tokenize(rawText)
-        
         extracted_sentences = Helper.get_extractor().fromParagraph(rawText)
         sentences = []
         for sentence in extracted_sentences:
@@ -95,33 +89,12 @@ class Helper:
                 return sentence.strip(), sentence_start, sentence_end  # return the sentence if it contains the indices
             
         return "", -1, -1  # return an empty string if no sentence is found
-    
-    @staticmethod
-    def get_lemmas(word):
-        """
-        get analysis of an input word using zemberek's morphological analyzer
-        analysis may have more than one result, but one should be chosen
-        heuristic: choose the lemma which has the smallest length
-        !!! better approach -> using morpholocial disambiguator
-        """
 
-        morph = Helper.get_morphology()
-        analysis = morph.analyze(word)
-        lemmas = set()
-        for result in analysis:
-            lemmas.update(result.getLemmas())
-
-        lemmas = list(lemmas)
-        
-        if len(lemmas) == 0: # no analysis
-            return ""
-        else:
-            return min(lemmas, key=len)
-    
     @staticmethod
     def get_corrected_sentence(idx, sentOrig, idxStartSent, idxEndSent):
         """
         returns the reconstructed correct sentence for a given original sentence
+        used in main
         """
         # sorting errors occured in the text according to the start (asc) and end (desc) index of the error
         errors_sorted = sorted(globals.data[idx]["annotations"][0]["result"], key = lambda e: (e["value"]["start"], -e["value"]["end"]))
@@ -170,6 +143,76 @@ class Helper:
                 offset += len(error["value"]["text"][0]) - (error["value"]["end"] - error["value"]["start"])
                 
         return sentOrig
+
+    @staticmethod
+    def get_corrected_text(idx, resultId):
+        """
+        takes index (task id) and result (annotation) id to return the corrected form for the error
+        used in main
+        """
+        for res in globals.data[idx]["annotations"][0]["result"]:
+            if res["id"] == resultId and res["type"] == "textarea":
+                return res["value"]["text"][0]
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+    
+
+
+
+
+    
+    
+    
+
+    
+    
+    @staticmethod
+    def extract_punctuation_marks_TR(text):
+        """ finds and returns all punctiation marks in the input text as a list """
+
+        punctiation_marks_TR = ['.', ',', ':', ';', '?', '!', '/' '\'', '-', '—', '…', '(', ')', '[', ']', '"', "'", "`", "´" 'ʺ'] # 17 punctioation marks in Turkish defined by TDK (plus ` and ´)
+        return [char for char in text if char in punctiation_marks_TR]
+    
+    
+    @staticmethod
+    def get_lemmas(word):
+        """
+        get analysis of an input word using zemberek's morphological analyzer
+        analysis may have more than one result, but one should be chosen
+        heuristic: choose the lemma which has the smallest length
+        !!! better approach -> using morpholocial disambiguator
+        """
+
+        morph = Helper.get_morphology()
+        analysis = morph.analyze(word)
+        lemmas = set()
+        for result in analysis:
+            lemmas.update(result.getLemmas())
+
+        lemmas = list(lemmas)
+        
+        if len(lemmas) == 0: # no analysis
+            return ""
+        else:
+            return min(lemmas, key=len)
+    
     
     @staticmethod
     def find_sublist_range(lst1, lst2):
@@ -214,18 +257,27 @@ class Helper:
         
     @staticmethod
     def get_morpholocial_analysis(err):
-        # err.sentCorr, err.corrText
+        """
+        returns the best analysis for the corrected text
+        """
         morph = Helper.get_morphology()
         try:
-            # get analysis and best disambiguation result for the corrected sentence
+            if err.sentCorr.strip() == "":
+                return []
+            # get analysis and the best disambiguation result for the corrected sentence
             results = morph.analyzeSentence(err.sentCorr)
             results_disambiguated = morph.disambiguate(err.sentCorr, results)
             best = results_disambiguated.bestAnalysis()
 
+            
+            if err.corrText.strip() == "":
+                return []
             # get analysis and best disambiguation result for the corrected text
             results_corrTxt = morph.analyzeSentence(err.corrText)
             results_disambiguated_corrTxt = morph.disambiguate(err.corrText, results_corrTxt)
             best_corrTxt = results_disambiguated_corrTxt.bestAnalysis()
+            
+
 
             surface_forms = [a.surfaceForm() for a in best]
             surface_forms_corrTxt = [a.surfaceForm() for a in best_corrTxt]
@@ -235,13 +287,13 @@ class Helper:
             res = []
             for idx, token in enumerate(best):
                 if idx in range(start, end):
-                    #print(token.getPos())
-                    #posRecord = dict(posPrimary = str(token.getPos()), posSecondary = str(token.getDictionaryItem().secondaryPos), surfaceForm = str(token.surfaceForm()))
-                    #res.append(str(token.getPos()))
-                    #res.append(posRecord)
                     res.append(token)
         except Exception as e:
-            #print(e)
+            if globals.debug:
+                print("err.sentCorr: ", err.sentCorr)
+                print("err.corrText: ", err.corrText)
+                print("err.errType: ", err.errType)
+                print(e)
             return []
         else:
             return res
