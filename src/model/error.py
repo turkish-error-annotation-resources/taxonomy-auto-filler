@@ -1,3 +1,5 @@
+import json
+
 class Error:
     """ Represents <Error> in the paper https://doi.org/10.1007/s10579-024-09794-0 """
 
@@ -17,7 +19,23 @@ class Error:
         self.errTax = errTax # for taxonomy mapping of the error
         self.morphAnalysisFormatLong = morphAnalysisFormatLong # long format of the morph analysis by Zemberek, filled while inflectional feature analysis, used in lexical feature detection
 
-
+    def to_dict(self):
+        return {
+            "idLabelStudio": self.idLabelStudio,
+            "idData": self.idData,
+            "rawText": self.rawText,
+            "idxStartErr": self.idxStartErr,
+            "idxEndErr": self.idxEndErr,
+            "sentOrig": self.sentOrig,
+            "idxStartSent": self.idxStartSent,
+            "idxEndSent": self.idxEndSent,
+            "sentCorr": self.sentCorr,
+            "errType": self.errType,
+            "incorrText": self.incorrText,
+            "corrText": self.corrText,
+            "errTax": self.errTax.to_dict() if self.errTax else None,
+            "morphAnalysisFormatLong": json.dumps(self.morphAnalysisFormatLong) if self.morphAnalysisFormatLong else None
+        }
         
     def print(self, errTypeList):
         """
