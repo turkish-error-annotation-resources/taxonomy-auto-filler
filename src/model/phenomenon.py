@@ -13,6 +13,9 @@ class Phenomenon(Enum):
     UNTRANSLATED = 'Untranslated' # NOT USED
     AMBIGUITY = 'Ambiguity' # NOT USED
 
+    def __str__(self):
+        return self.value
+
     @staticmethod
     def mapPhenomenon(err): 
         match err.errType:

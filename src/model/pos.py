@@ -24,6 +24,9 @@ class POS(Enum):
     X = 'Other'                         # + (Unknown)
     CONJ = 'Conjunction'                # extended POS (will be used in case of not determining it as SCNOJ or CCONJ)
 
+    def __str__(self):
+        return self.value
+    
     # CCONJ: Coordinating Conjunctions
     __cconj_list = {"ve", "ama", "fakat", "ancak", "veya", "ya da", "ne", "hem", "ile", "lakin", "yahut", "ya", "de", "da"}
     # SCONJ: Subordinating Conjunctions

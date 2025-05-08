@@ -16,6 +16,9 @@ class LexFeat(Enum):
     NUMTYPE = 'NumType'
     REFLEX = 'Reflex'
 
+    def __str__(self):
+        return self.value
+
     #todo: is enum type necesssary?
     
     __pronList = ["ben", "sen", "biz", "siz", "benim", "senin", "bizim", "sizin", "benimki", "seninki", "bizimki", "sizinki"]

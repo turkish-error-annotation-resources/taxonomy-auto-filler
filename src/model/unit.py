@@ -14,6 +14,9 @@ class Unit(Enum):
     PHRASE = 'Phrase'
     SENTENCE = 'Sentence'
 
+    def __str__(self):
+        return self.value
+
     @staticmethod
     def mapUnit(err):
         match err.errType:

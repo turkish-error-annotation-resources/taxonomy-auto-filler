@@ -12,6 +12,9 @@ class Level(Enum):
     DISCOURSE = 'Discourse'
     SOCIOLINGUISTIC = 'Sociolinguistic'
 
+    def __str__(self):
+        return self.value
+
     @staticmethod
     def mapLevel(err):
         mapping = {

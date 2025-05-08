@@ -28,6 +28,9 @@ class InfFeat(Enum):
     VERBFORM = 'VerbForm'
     VOICE = 'Voice'
 
+    def __str__(self):
+        return self.value
+
     #todo: is enum type necesssary?
 
     @staticmethod
