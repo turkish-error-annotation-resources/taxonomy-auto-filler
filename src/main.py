@@ -12,16 +12,9 @@ from helper import Helper
 
 import csv
 
-def main():
-    # to enable running the code with the "path" parameter which is used for Label Studio's json output/export file
-    parser = argparse.ArgumentParser(description = "Process a file path.")
-    parser.add_argument("path", help = "Path to the Label Studio's json output/export file ")
+def entry(path):
     
-    args = parser.parse_args()
-    if globals.debug:
-        print(f"Path received: {args.path}")
-
-    Helper.load_data(args.path) # loading input file (Label Studio's json output/export file)
+    Helper.load_data(path) # loading input file (Label Studio's json output/export file)
     Helper.load_abbr_list_TR() # loading TDK's abbreviation list into globals.abbr_list_TR list to be used in Unit detection for HN (PUNCTUATION)
 
     #sentence_pairs = [] # for parallel data extraction
@@ -46,6 +39,7 @@ def main():
                 #sentence_pairs.append((err.idData, err.sentOrig, err.sentCorr)) # for parallel data extraction
 
                 # taxonomy related features
+                
                 err.errTax = Taxonomy()
                 err.errTax.pos = POS.mapPOS(err)
                 err.errTax.unit = Unit.mapUnit(err)
@@ -56,11 +50,12 @@ def main():
                 
                 errorList.append(err)
 
-                if globals.debug:
-                    err.print(["HN", "BA", "Dİ", "BH", "KI", "YA"])
-                    err.print(["ÜzY", "ÜU", "ÜDü", "KH", "ÜzB", "ÜDa", "ÜzT"])
+                #if globals.debug:
+                    #err.print(["HN", "BA", "Dİ", "BH", "KI", "YA"])
+                    #err.print(["ÜzY", "ÜU", "ÜDü", "KH", "ÜzB", "ÜDa", "ÜzT"])
                     #err.print(["KH"])
-                
+
+    return errorList
     """
     # for parallel data extraction
     #for pair in sentence_pairs:
@@ -76,5 +71,14 @@ def main():
             writer.writerow([id, original, corrected])
     """
 
+
 if __name__ == "__main__":
-    main()
+    # to enable running the code with the "path" parameter which is used for Label Studio's json output/export file
+    parser = argparse.ArgumentParser(description = "Process a file path.")
+    parser.add_argument("path", help = "Path to the Label Studio's json output/export file ")
+    
+    args = parser.parse_args()
+    if globals.debug:
+        print(f"Path received: {args.path}")
+    
+    entry(args.path)
