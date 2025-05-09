@@ -18,7 +18,7 @@ class Taxonomy:
     def to_dict(self):
         return {
             "id": self.id,
-            "pos": str(self.pos),
+            "pos": json.dumps([str(e) for e in self.pos]),
             "infFeat": json.dumps([str(e) for e in self.infFeat]),
             "lexFeat": json.dumps([str(e) for e in self.lexFeat]),
             "unit": str(self.unit),
