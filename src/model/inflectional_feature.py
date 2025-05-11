@@ -502,7 +502,9 @@ class InfFeat(Enum):
                     else:
                         infFeats["expAttr2_poss"] = None
 
-                    resForErroredMorphemes.append(infFeats)
+                    filtered_infFeats = {k: v for k, v in infFeats.items() if v is not None}
+
+                    resForErroredMorphemes.append(filtered_infFeats)
                     # --- --- --- --- --- --- --- --- --- --- --- --- ---
 
         return resForErroredMorphemes

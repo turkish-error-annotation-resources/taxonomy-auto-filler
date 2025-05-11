@@ -132,11 +132,13 @@ class LexFeat(Enum):
         # ABBREVIATION
         if err.errType == 'KI':
             lexFeats["other_abbr"] = True
-            resLexFeat.append(lexFeats)
+            filtered_lexFeats = {k: v for k, v in lexFeats.items() if v is not None}
+            resLexFeat.append(filtered_lexFeats)
         # SPELLING
         elif err.errType == 'YA':
             lexFeats["other_typo"] = True
-            resLexFeat.append(lexFeats)
+            filtered_lexFeats = {k: v for k, v in lexFeats.items() if v is not None}
+            resLexFeat.append(filtered_lexFeats)
         else:
             tokens = (err.corrText).split()
             for idx, token in enumerate(tokens):
@@ -178,6 +180,8 @@ class LexFeat(Enum):
                 else:
                     lexFeats["reflex"] = None
                 
-                resLexFeat.append(lexFeats)
+
+                filtered_lexFeats = {k: v for k, v in lexFeats.items() if v is not None}
+                resLexFeat.append(filtered_lexFeats)
                     
         return resLexFeat
