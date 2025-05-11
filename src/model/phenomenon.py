@@ -7,7 +7,7 @@ class Phenomenon(Enum):
 
     NONE = 'None'
     OMISSION = 'Omission' # the absence of an item that must appear in a well-formed utterance
-    ADDITION = 'Additiono' # the presence of an item that should not appear in a well-formed utterance
+    ADDITION = 'Addition' # the presence of an item that should not appear in a well-formed utterance
     MISUSE = 'Misuse' # the use of the wrong form of the morpheme or structure
     MISORDERING = 'Misordering' # the incorrect placement of a morpheme or a group of morphemes in an utterance
     UNTRANSLATED = 'Untranslated' # NOT USED
