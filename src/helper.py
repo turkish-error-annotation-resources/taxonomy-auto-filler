@@ -153,35 +153,6 @@ class Helper:
         for res in globals.data[idx]["annotations"][0]["result"]:
             if res["id"] == resultId and res["type"] == "textarea":
                 return res["value"]["text"][0]
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-    
-
-
-
-
-    
-    
-    
-
-    
     
     @staticmethod
     def extract_punctuation_marks_TR(text):
@@ -189,7 +160,6 @@ class Helper:
 
         punctiation_marks_TR = ['.', ',', ':', ';', '?', '!', '/' '\'', '-', '—', '…', '(', ')', '[', ']', '"', "'", "`", "´" 'ʺ'] # 17 punctioation marks in Turkish defined by TDK (plus ` and ´)
         return [char for char in text if char in punctiation_marks_TR]
-    
     
     @staticmethod
     def get_lemmas(word):
@@ -212,7 +182,6 @@ class Helper:
             return ""
         else:
             return min(lemmas, key=len)
-    
     
     @staticmethod
     def find_sublist_range(lst1, lst2):
@@ -278,7 +247,6 @@ class Helper:
             best_corrTxt = results_disambiguated_corrTxt.bestAnalysis()
             
 
-
             surface_forms = [a.surfaceForm() for a in best]
             surface_forms_corrTxt = [a.surfaceForm() for a in best_corrTxt]
 
@@ -293,6 +261,34 @@ class Helper:
                 print("err.sentCorr: ", err.sentCorr)
                 print("err.corrText: ", err.corrText)
                 print("err.errType: ", err.errType)
+                print(e)
+            return []
+        else:
+            return res
+
+    @staticmethod
+    def get_morpholocial_analysis_for_incorrect_text(err):
+        """
+        returns the best analysis for the incorrect text
+        """
+        morph = Helper.get_morphology()
+        res = []
+
+        try:
+            if err.sentCorr.strip() == "" or err.corrText.strip() == "":
+                return []
+            
+            # get analysis and the best disambiguation result for the corrected sentence
+            results = morph.analyzeSentence(err.incorrText)
+            results_disambiguated = morph.disambiguate(err.sentOrig, results)
+            best = results_disambiguated.bestAnalysis()
+
+            # Print all possible results
+            for analysis in best:
+                res.append(analysis.formatLong())
+
+        except Exception as e:
+            if globals.debug:
                 print(e)
             return []
         else:
