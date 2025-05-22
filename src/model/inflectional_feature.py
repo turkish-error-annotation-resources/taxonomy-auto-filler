@@ -250,12 +250,13 @@ class InfFeat(Enum):
             resForCorrectedForm.append(infFeatsCorrectedForm)
             # --- --- --- --- --- --- --- --- --- --- --- --- ---
             
+            # todo: YENİ -> will be changed
             if (err.errType == 'BA' and err.errTax.unit == Unit.AFFIX) or \
                 (err.errType == 'YA' and err.errTax.unit == Unit.AFFIX) or \
                 (err.errType == 'ÜzY' and err.errTax.unit == Unit.AFFIX) or \
-                (err.errType == 'ÜU') or \
-                (err.errType == 'KH') or \
-                (err.errType == 'ÜzB'):
+                (err.errType in ['ÜU', 'KH', 'ÜzB']) or \
+                (err.errType in ['DU', 'SA', 'İY', 'ÇA', 'ZA', 'OL', 'ŞA', 'KİP', 'GÖ', 'ÇF', 'AB', 'KBF', 'YENİ']):
+                
                 # --- --- --- DETECTION FOR MISTAKEN MORPHEME --- --- ---
                 morphemeList = [str(m) for m in analysis.getMorphemes()] # eg. ['Verb:Verb', 'Future:Fut', 'PastTense:Past', 'ThirdPersonSingular:A3sg']
                 morphemeSurfaceList = [m.surface for m in analysis.getMorphemeDataList()] # eg. ['düş', 'ecek', 'ti', '']

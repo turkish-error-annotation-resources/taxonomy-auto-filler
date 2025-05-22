@@ -139,6 +139,9 @@ class LexFeat(Enum):
             lexFeats["other_typo"] = True
             filtered_lexFeats = {k: v for k, v in lexFeats.items() if v is not None}
             resLexFeat.append(filtered_lexFeats)
+        elif err.errType in ['HN', 'KS', 'ES', 'SI', 'ÇA', 'ZA', 'OL', 'ŞA', 'KİP', 'GÖ', 'ÇF', 'Kİ', 'KT', 'GE', 'SE', 'AB', 'KBF', 'YENİ', 'TÜ']: 
+            # todo: KS and ES will be deleted, SI will be added to LS, YENİ will be renamed
+            return resLexFeat
         else:
             tokens = (err.corrText).split()
             for idx, token in enumerate(tokens):

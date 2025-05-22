@@ -161,3 +161,125 @@ class Unit(Enum):
                 direct mapping
                 """
                 return Unit.LEMMA
+            case 'SI':
+                # extract tokens from the original sentence
+                tokens = err.sentOrig.split()
+                tokens_erroredText = err.incorrText.split()
+
+                if tokens == tokens_erroredText: # assumption: no other errors exist in the sentence
+                    return Unit.SENTENCE
+                elif (len(err.incorrText.split()) == len(err.corrText.split()) and len(err.incorrText.split()) > 1):
+                    return Unit.PHRASE
+                elif len(err.corrText.split()) == 1: 
+                    return Unit.AFFIX
+                else:
+                    return Unit.NONE
+            case 'KS':
+                """
+                direct mapping
+                """
+                return Unit.WORD
+            case 'ES':
+                """
+                direct mapping
+                """
+                return Unit.AFFIX
+            case 'DU':
+                """
+                direct mapping
+                """
+                return Unit.AFFIX
+            case 'SA':
+                """
+                direct mapping
+                """
+                return Unit.AFFIX
+            case 'İY':
+                """
+                direct mapping
+                """
+                return Unit.AFFIX
+            case 'ÇA':
+                """
+                direct mapping
+                """
+                return Unit.AFFIX
+            case 'ZA':
+                """
+                direct mapping
+                """
+                return Unit.AFFIX
+            case 'OL':
+                """
+                if more than one token is labeled as incorrect and 
+                length of corrected form is 1 then WORD, else AFFIX
+                """
+                tokens_erroredText = err.incorrText.split()
+
+                if len(tokens_erroredText) > 1 and len(err.corrText.split()) == 1:
+                    return Unit.WORD
+                
+                return Unit.AFFIX
+            case 'ŞA':
+                """
+                direct mapping
+                """
+                return Unit.AFFIX
+            case 'KİP':
+                """
+                direct mapping
+                """
+                return Unit.AFFIX
+            case 'GÖ':
+                """
+                direct mapping
+                """
+                return Unit.AFFIX
+            case 'ÇF':
+                """
+                direct mapping
+                """
+                return Unit.AFFIX
+            case 'Kİ':
+                """
+                direct mapping
+                """
+                return Unit.AFFIX
+            case 'KT':
+                """
+                direct mapping
+                """
+                return Unit.WORD
+            case 'GE':
+                """
+                direct mapping
+                """
+                return Unit.AFFIX
+            case 'SE':
+                """
+                direct mapping
+                """
+                return Unit.AFFIX
+            case 'AB':
+                """
+                direct mapping
+                """
+                return Unit.AFFIX
+            case 'KBF':
+                """
+                direct mapping
+                """
+                return Unit.AFFIX
+            case 'YENİ': # TODO: will be renamed
+                """
+                direct mapping
+                """
+                return Unit.WORD
+            case 'TÜ':
+                """
+                direct mapping
+                """
+                return Unit.AFFIX
+            
+            
+                

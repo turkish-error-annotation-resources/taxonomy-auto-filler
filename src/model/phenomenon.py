@@ -172,3 +172,132 @@ class Phenomenon(Enum):
                 direct mapping
                 """
                 return Phenomenon.MISUSE
+            case 'KS': # todo: will be deleted
+                return Phenomenon.MISORDERING
+            case 'ES': # todo: will be deleted
+                return Phenomenon.MISORDERING
+            case 'SI': # todo: will be added to LS at the end
+                return Phenomenon.MISORDERING
+            case 'DU':
+                # assumption: only one error included
+                analysis_format_long = Helper.get_morpholocial_analysis_for_incorrect_text(err)
+
+                if any(tag in analysis_format_long for tag in [":Acc", ":Dat", ":Gen", ":Loc", ":Ins", ":Abl", ":Equ"]):
+                    return Phenomenon.MISUSE
+
+                if len(err.incorrText) > len(err.corrText):
+                    return Phenomenon.ADDITION
+                elif len(err.incorrText) < len(err.corrText):
+                    return Phenomenon.OMISSION
+                
+            case 'SA':
+                if len(err.incorrText) > len(err.corrText):
+                    return Phenomenon.ADDITION
+                elif len(err.incorrText) < len(err.corrText):
+                    return Phenomenon.OMISSION
+            case 'İY':
+                # assumption: only one error included
+                analysis_format_long = Helper.get_morpholocial_analysis_for_incorrect_text(err)
+
+                if any(tag in analysis_format_long for tag in [":P1sg", ":P2sg", ":P3sg", ":P1pl", ":P2pl", ":P3pl"]):
+                    return Phenomenon.MISUSE
+
+                if len(err.incorrText) > len(err.corrText):
+                    return Phenomenon.ADDITION
+                elif len(err.incorrText) < len(err.corrText):
+                    return Phenomenon.OMISSION
+            case 'ÇA':
+                # assumption: only one error included
+                analysis_format_long = Helper.get_morpholocial_analysis_for_incorrect_text(err)
+
+                if any(tag in analysis_format_long for tag in [":Caus", ":Pass", "Recip", ":Reflex"]):
+                    return Phenomenon.MISUSE
+                
+                if len(err.incorrText) > len(err.corrText):
+                    return Phenomenon.ADDITION
+                elif len(err.incorrText) < len(err.corrText):
+                    return Phenomenon.OMISSION
+            case 'ZA':
+                """
+                direct mapping
+                """
+                return Phenomenon.MISUSE
+            case 'OL':
+                # assumption: only one error included
+                analysis_format_long = Helper.get_morpholocial_analysis_for_incorrect_text(err)
+
+                if any(tag in analysis_format_long for tag in ["Neg"]):
+                    return Phenomenon.MISUSE
+
+                if len(err.incorrText) > len(err.corrText):
+                    return Phenomenon.ADDITION
+                elif len(err.incorrText) < len(err.corrText):
+                    return Phenomenon.OMISSION
+            case 'ŞA':
+                """
+                direct mapping
+                """
+                return Phenomenon.MISUSE
+            case 'KİP':
+                # assumption: only one error included
+                analysis_format_long = Helper.get_morpholocial_analysis_for_incorrect_text(err)
+
+                if any(tag in analysis_format_long for tag in ["+Imp", ":Opt", ":Able", ":Neces", ":Cop", ":Aor", ":Cond", ":Unable", ":Des", "Zero→Verb+Pres+A3sg", ":Cop"]):
+                    return Phenomenon.MISUSE
+
+                if len(err.incorrText) > len(err.corrText):
+                    return Phenomenon.ADDITION
+                elif len(err.incorrText) < len(err.corrText):
+                    return Phenomenon.OMISSION
+            case 'GÖ':
+                """
+                direct mapping
+                """
+                return Phenomenon.MISUSE
+            case 'ÇF':
+                """
+                direct mapping
+                """
+                return Phenomenon.MISUSE
+            case 'Kİ':
+                if len(err.incorrText) > len(err.corrText):
+                    return Phenomenon.ADDITION
+                elif len(err.incorrText) < len(err.corrText):
+                    return Phenomenon.OMISSION
+            case 'KT':
+                """
+                direct mapping
+                """
+                return Phenomenon.MISUSE
+            case 'GE':
+                """
+                direct mapping
+                """
+                return Phenomenon.ADDITION
+            case 'SE':
+                if len(err.incorrText) > len(err.corrText):
+                    return Phenomenon.ADDITION
+                elif len(err.incorrText) < len(err.corrText):
+                    return Phenomenon.OMISSION
+            case 'AB':
+                """
+                direct mapping
+                """
+                return Phenomenon.MISUSE
+            case 'KBF':
+                """
+                direct mapping
+                """
+                return Phenomenon.OMISSION
+            case 'YENİ': # todo: will be renamed
+                """
+                direct mapping
+                """
+                return Phenomenon.MISUSE
+            case 'TÜ':
+                if len(err.incorrText) > len(err.corrText):
+                    return Phenomenon.ADDITION
+                elif len(err.incorrText) < len(err.corrText):
+                    return Phenomenon.OMISSION
+                else:
+                    return Phenomenon.MISUSE # assumption: incorrect and correct word have the same length
