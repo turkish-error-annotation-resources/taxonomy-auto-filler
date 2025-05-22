@@ -1,0 +1,1191 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Taxonomy Mapper</title>
+
+    <style>
+        :root {
+            --primary: #4361ee;
+            --primary-light: #4895ef;
+            --secondary: #3f37c9;
+            --light: #f8f9fa;
+            --dark: #212529;
+            --success: #4cc9f0;
+            --error: #f72585;
+            --warning: #f8961e;
+            --border-radius: 8px;
+            --box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+        }
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            line-height: 1.6;
+            color: var(--dark);
+            background-color: #f5f7fa;
+            padding: 20px;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+
+        header {
+            text-align: center;
+            margin-bottom: 40px;
+        }
+
+        header h1 {
+            font-size: 2.5rem;
+            color: var(--primary);
+            margin-bottom: 10px;
+        }
+
+        header p {
+            font-size: 1.1rem;
+            color: #6c757d;
+        }
+
+        .tabs {
+            display: flex;
+            gap: 10px;
+            margin-bottom: 20px;
+        }
+
+        .tab {
+            padding: 12px 20px;
+            background-color: #e9ecef;
+            border-radius: var(--border-radius);
+            cursor: pointer;
+            font-weight: 500;
+            transition: all 0.3s ease;
+        }
+
+        .tab.active {
+            background-color: var(--primary);
+            color: white;
+        }
+
+        .tab-content {
+            display: none;
+        }
+
+        .tab-content.active {
+            display: block;
+        }
+
+        .card {
+            background-color: white;
+            border-radius: var(--border-radius);
+            box-shadow: var(--box-shadow);
+            padding: 25px;
+            margin-bottom: 30px;
+        }
+
+        .card-header {
+            margin-bottom: 20px;
+            padding-bottom: 15px;
+            border-bottom: 1px solid #e9ecef;
+        }
+
+        .card-header h2 {
+            font-size: 1.5rem;
+            color: var(--secondary);
+        }
+
+        .input-group {
+            margin-bottom: 20px;
+        }
+
+        .input-group label {
+            display: block;
+            margin-bottom: 8px;
+            font-weight: 500;
+        }
+
+        .input-group input, .input-group select, .input-group textarea {
+            width: 100%;
+            height: 50px;
+            padding: 12px;
+            border: 1px solid #ced4da;
+            border-radius: var(--border-radius);
+            font-size: 1rem;
+            transition: border-color 0.3s;
+        }
+
+        .input-group input:focus, .input-group select:focus, .input-group textarea:focus {
+            border-color: var(--primary);
+            outline: none;
+        }
+
+        .file-upload {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            padding: 30px;
+            border: 2px dashed #ced4da;
+            border-radius: var(--border-radius);
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+
+        .file-upload:hover {
+            border-color: var(--primary);
+        }
+
+        .file-upload i {
+            font-size: 48px;
+            color: var(--primary);
+            margin-bottom: 15px;
+        }
+
+        .file-upload-text {
+            text-align: center;
+        }
+
+        .file-upload input {
+            display: none;
+        }
+
+        .btn {
+            padding: 12px 24px;
+            background-color: var(--primary);
+            color: white;
+            border: none;
+            border-radius: var(--border-radius);
+            font-size: 1rem;
+            font-weight: 500;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+
+        .btn:hover {
+            background-color: var(--secondary);
+        }
+
+        .btn-outline {
+            background-color: transparent;
+            border: 1px solid var(--primary);
+            color: var(--primary);
+        }
+
+        .btn-outline:hover {
+            background-color: var(--primary);
+            color: white;
+        }
+        
+        .btn-group {
+            display: flex;
+            gap: 10px;
+            justify-content: flex-end;
+        }
+
+        .error-message {
+            color: var(--error);
+            font-size: 0.9rem;
+            margin-top: 5px;
+        }
+
+        .result-container {
+            margin-top: 30px;
+        }
+
+        .result-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 15px;
+        }
+
+        .result-header h3 {
+            color: var(--secondary);
+        }
+
+        .result-count {
+            background-color: var(--primary);
+            color: white;
+            padding: 5px 10px;
+            border-radius: 20px;
+            font-size: 0.9rem;
+        }
+
+        .result-table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-bottom: 20px;
+            overflow-x: auto;
+        }
+
+        .result-table th, .result-table td {
+            padding: 12px 15px;
+            text-align: left;
+            border-bottom: 1px solid #e9ecef;
+        }
+
+        .result-table th {
+            background-color: #f8f9fa;
+            color: var(--secondary);
+            font-weight: 600;
+        }
+
+        .result-table tr:hover {
+            background-color: #f8f9fa;
+        }
+
+        .no-data {
+            text-align: center;
+            padding: 30px;
+            color: #6c757d;
+        }
+
+        .pagination {
+            display: flex;
+            justify-content: center;
+            list-style: none;
+            gap: 5px;
+        }
+
+        .pagination li {
+            display: inline-block;
+        }
+
+        .pagination a {
+            display: block;
+            padding: 8px 12px;
+            border-radius: 4px;
+            background-color: #f8f9fa;
+            color: var(--dark);
+            text-decoration: none;
+            transition: all 0.3s;
+        }
+
+        .pagination a:hover, .pagination a.active {
+            background-color: var(--primary);
+            color: white;
+        }
+        
+        .taxonomy-card {
+            display: flex;
+            flex: 1;
+            flex-wrap: wrap;
+            gap: 20px;
+            margin-top: 20px;
+        }
+
+        .taxonomy-section {
+            flex: 1;
+            min-width: 300px;
+            background-color: #f8f9fa;
+            border-radius: var(--border-radius);
+            padding: 20px;
+        }
+
+        .taxonomy-section h4 {
+            color: var(--primary);
+            margin-bottom: 15px;
+            padding-bottom: 8px;
+            border-bottom: 1px solid #e9ecef;
+        }
+
+        .taxonomy-item {
+            margin-bottom: 10px;
+            display: flex;
+        }
+
+        .taxonomy-item-label {
+            font-weight: 500;
+            width: 120px;
+            color: var(--secondary);
+        }
+
+        .taxonomy-item-value {
+            flex: 1;
+        }
+        
+        .spinner {
+            display: inline-block;
+            width: 20px;
+            height: 20px;
+            border: 3px solid rgba(0, 0, 0, 0.1);
+            border-radius: 50%;
+            border-top-color: var(--primary);
+            animation: spin 1s ease-in-out infinite;
+            margin-right: 10px;
+        }
+
+        @keyframes spin {
+            to { transform: rotate(360deg); }
+        }
+        
+        .hidden {
+            display: none;
+        }
+        
+        .alert {
+            padding: 15px;
+            border-radius: var(--border-radius);
+            margin-bottom: 20px;
+            display: flex;
+            align-items: center;
+        }
+        
+        .alert-success {
+            background-color: #d1e7dd;
+            color: #0f5132;
+        }
+        
+        .alert-error {
+            background-color: #f8d7da;
+            color: #842029;
+        }
+        
+        .close-btn {
+            margin-left: auto;
+            color: inherit;
+            background: transparent;
+            border: none;
+            font-size: 1.2rem;
+            cursor: pointer;
+        }
+        
+        #fileNameDisplay {
+            margin-top: 10px;
+            font-style: italic;
+            color: var(--primary);
+        }
+
+        /* Citation section */
+        .citation-section {
+            margin-top: 40px;
+            padding: 20px;
+            background-color: #f8f9fa;
+            border-left: 4px solid var(--primary);
+            border-radius: 0 var(--border-radius) var(--border-radius) 0;
+        }
+
+        .citation-header {
+            font-size: 1.25rem;
+            color: var(--secondary);
+            margin-bottom: 15px;
+        }
+
+        .citation-text {
+            margin-bottom: 15px;
+            line-height: 1.6;
+        }
+
+        .citation-box {
+            background-color: white;
+            padding: 15px;
+            border-radius: var(--border-radius);
+            border: 1px solid #e9ecef;
+            font-family: 'Courier New', monospace;
+            margin-bottom: 15px;
+        }
+
+        .citation-format {
+            margin-top: 10px;
+            font-style: italic;
+            color: #6c757d;
+        }
+
+        /* Responsive styling */
+        @media (max-width: 768px) {
+            .tabs {
+                flex-direction: column;
+            }
+            
+            .taxonomy-card {
+                flex-direction: column;
+            }
+            
+            .btn-group {
+                flex-direction: column;
+            }
+            
+            .btn {
+                width: 100%;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <header>
+            <h1>Taxonomy Mapper </h1>
+            <p>Convert grammatical error annotations to a faceted taxonomy representation offered in <a href="https://link.springer.com/article/10.1007/s10579-024-09794-0" target="_blank">"Error annotation: a review and faceted taxonomy"</a>.</p>
+        </header>
+
+        <div class="tabs">
+            <div class="tab active" data-tab="file-upload">File Upload</div>
+            <div class="tab" data-tab="manual-entry">Manual Entry</div>
+        </div>
+
+        <div id="alerts-container"></div>
+
+        <div class="tab-content active" id="file-upload">
+            <div class="card">
+                <div class="card-header">
+                    <h2>Upload JSON File</h2>
+                </div>
+                <div class="file-upload" id="dropArea">
+                    <i>📁</i>
+                    <div class="file-upload-text">
+                        <p>Drag & drop a JSON file here or click to browse</p>
+                        <p><small>Accepts Label Studio export files in JSON format</small></p>
+                    </div>
+                    <input type="file" id="fileInput" accept=".json">
+                    <div id="fileNameDisplay" class="hidden"></div>
+                </div>
+                <div class="btn-group" style="margin-top: 20px;">
+                    <button id="processFileBtn" class="btn" disabled>
+                        <span id="processSpinner" class="spinner hidden"></span>
+                        Process File
+                    </button>
+                </div>
+            </div>
+
+            <div class="result-container hidden" id="fileResultsContainer">
+                <div class="card">
+                    <div class="card-header">
+                        <h2>Results</h2>
+                    </div>
+                    <div class="result-header">
+                        <h3>Mapped Errors</h3>
+                        <span class="result-count" id="errorCount">0 errors</span>
+                    </div>
+                    <div class="table-responsive">
+                        <table class="result-table">
+                            <thead>
+                                <tr>
+                                    <th>#</th>
+                                    <th>Error Type</th>
+                                    <th>Original Form</th>
+                                    <th>Corrected Form</th>
+                                    <th>POS</th>
+                                    <th>Unit</th>
+                                    <th>Phenomenon</th>
+                                    <th>Linguistic Level</th>
+                                    
+                                </tr>
+                            </thead>
+                            <tbody id="resultsTableBody">
+                                <!-- Results will be inserted here -->
+                            </tbody>
+                        </table>
+                    </div>
+                    <div id="pagination" class="pagination">
+                        <!-- Pagination will be inserted here -->
+                    </div>
+                </div>
+            </div>
+
+            <div class="taxonomy-details hidden" id="taxonomyDetails">
+                <div class="card">
+                    <div class="card-header">
+                        <h2>Taxonomy Mapping Details</h2>
+                    </div>
+                    <div class="taxonomy-card">
+                        <div class="taxonomy-section">
+                            <h4>Original Error</h4>
+                            <div class="taxonomy-item">
+                                <span class="taxonomy-item-label">Original Form:</span>
+                                <span class="taxonomy-item-value" id="detailOriginal"></span>
+                            </div>
+                            <div class="taxonomy-item">
+                                <span class="taxonomy-item-label">Corrected Form:</span>
+                                <span class="taxonomy-item-value" id="detailCorrected"></span>
+                            </div>
+                            <div class="taxonomy-item">
+                                <span class="taxonomy-item-label">Error Type:</span>
+                                <span class="taxonomy-item-value" id="detailErrorType"></span>
+                            </div>
+                        </div>
+                        <div class="taxonomy-section">
+                            <h4>Mapped Taxonomy</h4>
+                            <div class="taxonomy-item">
+                                <span class="taxonomy-item-label">PoS (UD):</span>
+                                <span class="taxonomy-item-value" id="detailPos"></span>
+                            </div>
+                            <div class="taxonomy-item">
+                                <span class="taxonomy-item-label">Inflect. Features:</span>
+                                <span class="taxonomy-item-value" id="detailInflect"></span>
+                            </div>
+                            <div class="taxonomy-item">
+                                <span class="taxonomy-item-label">Lexical Features:</span>
+                                <span class="taxonomy-item-value" id="detailLexical"></span>
+                            </div>
+                            <div class="taxonomy-item">
+                                <span class="taxonomy-item-label">Unit:</span>
+                                <span class="taxonomy-item-value" id="detailUnit"></span>
+                            </div>
+                            <div class="taxonomy-item">
+                                <span class="taxonomy-item-label">Phenomenon:</span>
+                                <span class="taxonomy-item-value" id="detailPhenomenon"></span>
+                            </div>
+                            <div class="taxonomy-item">
+                                <span class="taxonomy-item-label">Linguistic Level:</span>
+                                <span class="taxonomy-item-value" id="detailLinguistic"></span>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="btn-group" style="margin-top: 20px;">
+                        <button id="backToResultsBtn" class="btn btn-outline">Back to Results</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="tab-content" id="manual-entry">
+            <div class="card">
+                <div class="card-header">
+                    <h2>Error Entry</h2>
+                </div>
+                <form id="manualForm">
+                    <div class="input-group">
+                        <label for="originalForm">Original/Erroneous Text</label>
+                        <input type="text" id="originalForm" placeholder="Enter an erroneous text" maxlength="50" required>
+                    </div>
+                    <div class="input-group">
+                        <label for="correctedForm">Corrected/Error-free Text</label>
+                        <input type="text" id="correctedForm" placeholder="Enter the corrected form of the erroneous text" maxlength="50" required>
+                    </div>
+                    <div class="input-group">
+                        <label for="errorType">Error Type</label>
+                        <select id="errorType" required>
+                            <option value="">Select an error type</option>
+                            <option value="HN">Punctuation</option>
+                            <option value="BA">Spacing</option>
+                            <option value="Dİ">Diacritics</option>
+                            <option value="BH">Capitalization</option>
+                            <option value="KI">Abbreviation</option>
+                            <option value="YA">Spelling</option>
+                            <option value="ÜzY">Consonant Voicing</option>
+                            <option value="ÜU">Vowel Harmony</option>
+                            <option value="ÜDü">Vowel Dropping</option>
+                            <option value="KH">Buffer Letter</option>
+                            <option value="ÜzB">Consonant Assimilation</option>
+                            <option value="ÜDa">Vowel Narrowing</option>
+                            <option value="ÜzT">Consonant Doubling</option>
+                            <option value="SI">Sequencing</option>
+                            <option value="DU">Case</option>
+                            <option value="SA">Number</option>
+                            <option value="İY">Possession</option>
+                            <option value="ÇA">Voice</option>
+                            <option value="ZA">Tense</option>
+                            <option value="OL">Negation</option>
+                            <option value="ŞA">Person</option>
+                            <option value="KİP">Mood</option>
+                            <option value="GÖ">Aspect</option>
+                            <option value="ÇF">Non-finite Verb</option>
+                            <option value="Kİ">Ki Error</option>
+                            <option value="KT">Word Class</option>
+                            <option value="GE">Unnecessary Affix</option>
+                            <option value="SE">Interrogotive Particle</option>
+                            <option value="AB">Allomorphy</option>
+                            <option value="KBF">Descriptive Compound Verb</option>
+                            <option value="YENİ">Final-Initial Merge</option>
+                            <option value="TÜ">Derivational Affix</option>
+                        </select>
+                    </div>
+                    <div class="btn-group">
+                        <button type="button" id="clearBtn" class="btn btn-outline">Clear</button>
+                        <button type="submit" id="mapBtn" class="btn">
+                            <span id="manualSpinner" class="spinner hidden"></span>
+                            Submit
+                        </button>
+                    </div>
+                </form>
+            </div>
+
+            <div class="result-container hidden" id="manualResultContainer">
+                <div class="card">
+                    <div class="card-header">
+                        <h2>Result</h2>
+                    </div>
+                    <div class="taxonomy-card">
+                        <div class="taxonomy-section">
+                            <h4>Raw Error Annotation</h4>
+                            <div class="taxonomy-item">
+                                <span class="taxonomy-item-label">Original Text:</span>
+                                <span class="taxonomy-item-value" id="manualOriginal"></span>
+                            </div>
+                            <div class="taxonomy-item">
+                                <span class="taxonomy-item-label">Corrected Text:</span>
+                                <span class="taxonomy-item-value" id="manualCorrected"></span>
+                            </div>
+                            <div class="taxonomy-item">
+                                <span class="taxonomy-item-label">Error Type:</span>
+                                <span class="taxonomy-item-value" id="manualErrorType"></span>
+                            </div>
+                        </div>
+                        <div class="taxonomy-section">
+                            <h4>Taxonomy Representation</h4>
+                            <div class="taxonomy-item">
+                                <span class="taxonomy-item-label">POS:</span>
+                                <span class="taxonomy-item-value" id="manualPos"></span>
+                            </div>
+                            <div class="taxonomy-item">
+                                <span class="taxonomy-item-label">Inf. Features:</span>
+                                <span class="taxonomy-item-value" id="manualInflect"></span>
+                            </div>
+                            <div class="taxonomy-item">
+                                <span class="taxonomy-item-label">Lex. Features:</span>
+                                <span class="taxonomy-item-value" id="manualLexical"></span>
+                            </div>
+                            <div class="taxonomy-item">
+                                <span class="taxonomy-item-label">Unit:</span>
+                                <span class="taxonomy-item-value" id="manualUnit"></span>
+                            </div>
+                            <div class="taxonomy-item">
+                                <span class="taxonomy-item-label">Phenomenon:</span>
+                                <span class="taxonomy-item-value" id="manualPhenomenon"></span>
+                            </div>
+                            <div class="taxonomy-item">
+                                <span class="taxonomy-item-label">Linguistic Level:</span>
+                                <span class="taxonomy-item-value" id="manualLinguistic"></span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Citation Section -->
+        <div class="citation-section">
+            <h3 class="citation-header">How to Cite</h3>
+            <p class="citation-text">
+                This tool is developed based on the idea provided in the research published in the Language Resources and Evalution. If you use the tool for your research, please cite the original publication below:
+            </p>
+            <div class="citation-box">
+                Eryiğit, G., Golynskaia, A., Sayar, E., Türker, T. Error annotation: a review and faceted taxonomy. Lang Resources & Evaluation (2025). https://doi.org/10.1007/s10579-024-09794-0
+            </div>
+            <p class="citation-format">
+                BibTeX format:
+            </p>
+            <div class="citation-box">
+                @article{eryigit2025,<br>
+                &nbsp;&nbsp;author={Eryiğit, Gülşen and Golynskaia, Anna and Sayar, Elif and Türker, Tolgahan},<br>
+                &nbsp;&nbsp;title={Error annotation: a review and faceted taxonomy},<br>
+                &nbsp;&nbsp;journal={Language Resources and Evaluation},<br>
+                &nbsp;&nbsp;year={2025},<br>
+                &nbsp;&nbsp;month={Jan},<br>
+                &nbsp;&nbsp;day={06},<br>
+                &nbsp;&nbsp;issn={1574-0218},<br>
+                &nbsp;&nbsp;doi={10.1007/s10579-024-09794-0},<br>
+                &nbsp;&nbsp;url={https://doi.org/10.1007/s10579-024-09794-0}<br>
+                }
+            </div>
+        </div>
+    </div>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            // Tab switching functionality
+            const tabs = document.querySelectorAll('.tab');
+            tabs.forEach(tab => {
+                tab.addEventListener('click', () => {
+                    // Remove active class from all tabs and contents
+                    document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
+                    document.querySelectorAll('.tab-content').forEach(c => c.classList.remove('active'));
+                    
+                    // Add active class to clicked tab and corresponding content
+                    tab.classList.add('active');
+                    const tabId = tab.getAttribute('data-tab');
+                    document.getElementById(tabId).classList.add('active');
+                });
+            });
+
+            // File upload functionality
+            const dropArea = document.getElementById('dropArea');
+            const fileInput = document.getElementById('fileInput');
+            const fileNameDisplay = document.getElementById('fileNameDisplay');
+            const processFileBtn = document.getElementById('processFileBtn');
+            window.uploadedFile = null;
+
+            // Prevent default drag behaviors
+            ['dragenter', 'dragover', 'dragleave', 'drop'].forEach(eventName => {
+                dropArea.addEventListener(eventName, preventDefaults, false);
+            });
+
+            function preventDefaults(e) {
+                e.preventDefault();
+                e.stopPropagation();
+            }
+
+            // Highlight drop area when file is dragged over it
+            ['dragenter', 'dragover'].forEach(eventName => {
+                dropArea.addEventListener(eventName, highlight, false);
+            });
+
+            ['dragleave', 'drop'].forEach(eventName => {
+                dropArea.addEventListener(eventName, unhighlight, false);
+            });
+
+            function highlight() {
+                dropArea.style.borderColor = 'var(--primary)';
+                dropArea.style.backgroundColor = 'rgba(67, 97, 238, 0.05)';
+            }
+
+            function unhighlight() {
+                dropArea.style.borderColor = '#ced4da';
+                dropArea.style.backgroundColor = 'transparent';
+            }
+
+            // Handle dropped files
+            dropArea.addEventListener('drop', handleDrop, false);
+            
+            function handleDrop(e) {
+                const dt = e.dataTransfer;
+                const file = dt.files[0];
+                handleFile(file);
+            }
+
+            // Handle selected files from input
+            fileInput.addEventListener('change', function() {
+                handleFile(this.files[0]);
+            });
+
+            // Click on drop area triggers file input
+            dropArea.addEventListener('click', function() {
+                fileInput.click();
+            });
+
+            function renameFileWithTimestamp(file) {
+                const nameParts = file.name.split('.');
+                const baseName = nameParts.slice(0, -1).join('.');
+                const extension = nameParts.pop();
+                const timestamp = Date.now(); // or use new Date().toISOString()
+
+                const newName = `${baseName}_${timestamp}.${extension}`;
+                return new File([file], newName, {
+                    type: file.type,
+                    lastModified: file.lastModified,
+                });
+            }
+
+            function handleFile(file) {
+                if (!file) return;
+                
+                if (file.type !== 'application/json') {
+                    showAlert('Please upload a JSON file.', 'error');
+                    return;
+                }
+
+                fileRenamed = renameFileWithTimestamp(file)
+                
+                const formData = new FormData();
+                formData.append('file', fileRenamed);
+
+                fetch('/upload', {
+                    method: 'POST',
+                    body: formData
+                })
+                .then(res => res.json())
+                .then(data => {
+                    fileNameDisplay.classList.remove('hidden');
+                    fileNameDisplay.innerText = file.name
+                    window.uploadedFile = fileRenamed.name;
+                    processFileBtn.disabled = false;
+                    showAlert('File uploaded successfully.', 'success');
+                })
+                .catch(err => {
+                    fileNameDisplay.classList.remove('hidden');
+                    fileNameDisplay.innerText = '';
+                    console.error(err);
+                });
+            }
+            
+            // Process file button
+            processFileBtn.addEventListener('click', function() {
+                if (!uploadedFile) {
+                    showAlert('Please upload a JSON file.', 'error');
+                    return;
+                }
+                
+                // Show spinner
+                const spinner = document.getElementById('processSpinner');
+                spinner.classList.remove('hidden');
+                processFileBtn.disabled = true;
+                
+                try {
+                    fetch('/process', {
+                        method: 'POST',
+                        headers: {
+                            'Content-Type': 'application/json'
+                        },
+                        body: JSON.stringify({ filename: window.uploadedFile })
+                    })
+                    .then(res => res.json())
+                    .then(data => {
+                        //console.log("Received errorList:", data.errorList[0]);
+                        //console.log("Received errorList:", data.errorList[0].errTax.lexFeat);
+
+                        // Process Label Studio data
+                        let currentData = [];
+                        let currentPage = 1;
+                        const itemsPerPage = 30;
+
+                        // Calculate pagination
+                        const totalPages = Math.ceil(data.errorList.length / itemsPerPage);
+                        const startIndex = (currentPage - 1) * itemsPerPage;
+                        const endIndex = Math.min(startIndex + itemsPerPage, data.errorList.length);
+
+                        const tableBody = document.getElementById('resultsTableBody');
+                        tableBody.innerHTML = '';
+                        
+                        if (data.errorList === 0) {
+                            tableBody.innerHTML = `
+                                <tr>
+                                    <td colspan="10" class="no-data">No data available</td>
+                                </tr>
+                            `;
+                            document.getElementById('pagination').innerHTML = '';
+                            return;
+                        }
+
+                        // Create table rows
+                        for (let i = startIndex; i < endIndex; i++) {
+                            const error = data.errorList[i];
+                            const row = document.createElement('tr');
+                            
+                            let parsedPOS = JSON.parse(data.errorList[i].errTax.pos);  // → ["Noun", "Verb"]
+                            let htmlStringPOS = parsedPOS.join(", ");  // → "Noun, Verb"
+                            if (htmlStringPOS === ""){ htmlStringPOS = "-" }
+
+                            row.innerHTML = `
+                                <td>${i + 1}</td>
+                                <td>${error.errType}</td>
+                                <td>${error.incorrText}</td>
+                                <td>${error.corrText}</td>
+                                <td>${htmlStringPOS}</td>
+                                <td>${error.errTax.unit}</td>
+                                <td>${error.errTax.phenomenon}</td>
+                                <td>${error.errTax.level}</td>
+                                <td>
+                                    <button class="btn btn-outline view-details" data-index="${i}">View Details</button>
+                                </td>
+                            `;
+                            tableBody.appendChild(row);
+                        }
+                        document.getElementById('errorCount').textContent = `${data.errorList.length} errors`;
+
+                    })
+                    .catch(err => {
+                        console.error("Error processing file:", err);
+                    });
+                    
+                    // Hide spinner
+                    spinner.classList.add('hidden');
+                    processFileBtn.disabled = false;
+                    
+                    // Show results
+                    document.getElementById('fileResultsContainer').classList.remove('hidden');
+                } catch (error) {
+                    console.error('Error processing file:', error);
+                    showAlert('Error processing file. Please make sure it\'s a valid Label Studio JSON export.', 'error');
+                    spinner.classList.add('hidden');
+                    processFileBtn.disabled = false;
+                }
+            });
+
+            // Manual form submission
+            const manualForm = document.getElementById('manualForm');
+            const clearBtn = document.getElementById('clearBtn');
+            
+            manualForm.addEventListener('submit', function(e) {
+                e.preventDefault();
+                
+                const original = document.getElementById('originalForm').value.trim();
+                const corrected = document.getElementById('correctedForm').value.trim();
+                const errorType = document.getElementById('errorType').value;
+                
+                if (!original || !corrected || !errorType) {
+                    showAlert('Please fill in all fields.', 'error');
+                    return;
+                }
+                
+                // Show spinner
+                const spinner = document.getElementById('manualSpinner');
+                spinner.classList.remove('hidden');
+                document.getElementById('mapBtn').disabled = true;
+                
+                // Process the manual entry
+                setTimeout(() => {
+                    processManualEntry(original, corrected, errorType);
+                    spinner.classList.add('hidden');
+                    document.getElementById('mapBtn').disabled = false;
+                }, 800); // Small delay to simulate processing
+            });
+            
+            clearBtn.addEventListener('click', function() {
+                manualForm.reset();
+                document.getElementById('manualResultContainer').classList.add('hidden');
+            });
+
+            // Back to results button
+            document.getElementById('backToResultsBtn').addEventListener('click', function() {
+                document.getElementById('taxonomyDetails').classList.add('hidden');
+                document.getElementById('fileResultsContainer').classList.remove('hidden');
+            });
+
+            // Alert functionality
+            function showAlert(message, type) {
+                const alertsContainer = document.getElementById('alerts-container');
+                const alert = document.createElement('div');
+                alert.className = `alert alert-${type}`;
+                alert.innerHTML = `
+                    ${message}
+                    <button class="close-btn">&times;</button>
+                `;
+                
+                alertsContainer.appendChild(alert);
+                
+                // Close button functionality
+                alert.querySelector('.close-btn').addEventListener('click', function() {
+                    alert.remove();
+                });
+                
+                // Auto-remove after 5 seconds
+                setTimeout(() => {
+                    if (alert.parentNode) {
+                        alert.remove();
+                    }
+                }, 5000);
+            }
+            
+            // Process Label Studio data
+            let currentData = [];
+            let currentPage = 1;
+            const itemsPerPage = 10;
+            
+            function processLabelStudioData() {
+                
+                try {
+                    // Assuming data is an array of annotated items
+                    const errors = window.errorList
+                    
+                    // Extract errors from Label Studio JSON format
+                    // This is a simplified example - adapt to your actual data structure
+                    data.forEach(item => {
+                        if (item.annotations && item.annotations.length > 0) {
+                            const annotation = item.annotations[0];
+                            if (annotation.result && annotation.result.length > 0) {
+                                annotation.result.forEach(result => {
+                                    if (result.value && result.value.text && result.value.labels) {
+                                        errors.push({
+                                            original: result.value.text,
+                                            corrected: result.value.corrected || '',
+                                            errorType: result.value.labels[0] || 'unknown',
+                                            // Generate mock mapping data
+                                            mapping: mockTaxonomyMapping(
+                                                result.value.text, 
+                                                result.value.corrected || '', 
+                                                result.value.labels[0] || 'unknown'
+                                            )
+                                        });
+                                    }
+                                });
+                            }
+                        }
+                    });
+                    
+                    // Update the data and display
+                    currentData = errors;
+
+                    updateResultsTable();
+                    document.getElementById('errorCount').textContent = `${errors.length} errors`;
+                    
+                    if (errors.length === 0) {
+                        showAlert('No errors found in the uploaded file.', 'error');
+                    } else {
+                        showAlert('File processed successfully.', 'success');
+                    }
+                } catch (error) {
+                    console.error('Error processing Label Studio data:', error);
+                    showAlert('Error processing data. The file format may not be compatible.', 'error');
+                }
+            }
+            
+            function updateResultsTable() {
+                const tableBody = document.getElementById('resultsTableBody');
+                tableBody.innerHTML = '';
+                
+                if (currentData.length === 0) {
+                    tableBody.innerHTML = `
+                        <tr>
+                            <td colspan="10" class="no-data">No data available</td>
+                        </tr>
+                    `;
+                    document.getElementById('pagination').innerHTML = '';
+                    return;
+                }
+                
+                // Calculate pagination
+                const totalPages = Math.ceil(currentData.length / itemsPerPage);
+                const startIndex = (currentPage - 1) * itemsPerPage;
+                const endIndex = Math.min(startIndex + itemsPerPage, currentData.length);
+                
+                // Create table rows
+                for (let i = startIndex; i < endIndex; i++) {
+                    const error = currentData[i];
+                    const row = document.createElement('tr');
+                    row.innerHTML = `
+                        <td>${i + 1}</td>
+                        <td>${error.original}</td>
+                        <td>${error.corrected}</td>
+                        <td>${error.errorType}</td>
+                        <td>
+                            <button class="btn btn-outline view-details" data-index="${i}">View Details</button>
+                        </td>
+                    `;
+                    tableBody.appendChild(row);
+                }
+                
+                // Add event listeners to view details buttons
+                document.querySelectorAll('.view-details').forEach(button => {
+                    button.addEventListener('click', function() {
+                        const index = parseInt(this.getAttribute('data-index'));
+                        showTaxonomyDetails(currentData[index]);
+                    });
+                });
+                
+                // Update pagination
+                updatePagination(totalPages);
+            }
+            
+            function updatePagination(totalPages) {
+                const pagination = document.getElementById('pagination');
+                pagination.innerHTML = '';
+                
+                if (totalPages <= 1) return;
+                
+                // Previous button
+                const prevLi = document.createElement('li');
+                const prevLink = document.createElement('a');
+                prevLink.href = '#';
+                prevLink.textContent = '«';
+                prevLink.addEventListener('click', function(e) {
+                    e.preventDefault();
+                    if (currentPage > 1) {
+                        currentPage--;
+                        updateResultsTable();
+                    }
+                });
+                prevLi.appendChild(prevLink);
+                pagination.appendChild(prevLi);
+                
+                // Page numbers
+                for (let i = 1; i <= totalPages; i++) {
+                    const li = document.createElement('li');
+                    const link = document.createElement('a');
+                    link.href = '#';
+                    link.textContent = i;
+                    if (i === currentPage) {
+                        link.classList.add('active');
+                    }
+                    link.addEventListener('click', function(e) {
+                        e.preventDefault();
+                        currentPage = i;
+                        updateResultsTable();
+                    });
+                    li.appendChild(link);
+                    pagination.appendChild(li);
+                }
+                
+                // Next button
+                const nextLi = document.createElement('li');
+                const nextLink = document.createElement('a');
+                nextLink.href = '#';
+                nextLink.textContent = '»';
+                nextLink.addEventListener('click', function(e) {
+                    e.preventDefault();
+                    if (currentPage < totalPages) {
+                        currentPage++;
+                        updateResultsTable();
+                    }
+                });
+                nextLi.appendChild(nextLink);
+                pagination.appendChild(nextLi);
+            }
+            
+            function showTaxonomyDetails(error) {
+                // Hide results table and show details view
+                document.getElementById('fileResultsContainer').classList.add('hidden');
+                document.getElementById('taxonomyDetails').classList.remove('hidden');
+                
+                // Fill in details
+                document.getElementById('detailOriginal').textContent = error.original;
+                document.getElementById('detailCorrected').textContent = error.corrected;
+                document.getElementById('detailErrorType').textContent = error.errorType;
+                
+                // Mapping details
+                document.getElementById('detailPos').textContent = error.mapping.pos;
+                document.getElementById('detailInflect').textContent = error.mapping.inflect;
+                document.getElementById('detailLexical').textContent = error.mapping.lexical;
+                document.getElementById('detailUnit').textContent = error.mapping.unit;
+                document.getElementById('detailPhenomenon').textContent = error.mapping.phenomenon;
+                document.getElementById('detailLinguistic').textContent = error.mapping.linguistic;
+            }
+            
+            // Process manual entry
+            function processManualEntry(original, corrected, errorType) {
+                // Get taxonomy mapping
+                //const mapping = mockTaxonomyMapping(original, corrected, errorType);
+                
+                // Fill in result container
+                document.getElementById('manualOriginal').textContent = original;
+                document.getElementById('manualCorrected').textContent = corrected;
+                document.getElementById('manualErrorType').textContent = errorType;
+                
+                try {
+                    fetch('/manualprocess', {
+                        method: 'POST',
+                        headers: {
+                            'Content-Type': 'application/json'
+                        },
+                        body: JSON.stringify({ originalText: original, correctedText: corrected, errorType: errorType })
+                    })
+                    .then(res => res.json())
+                    .then(data => {
+                        console.log("Returned:", data);
+                        //console.log("Received errorList:", data.errorList[0].errTax.lexFeat);
+                        
+                        document.getElementById('manualPos').textContent = data.errTax.pos;
+                        document.getElementById('manualInflect').textContent = data.errTax.infFeat;
+                        document.getElementById('manualLexical').textContent = data.errTax.lexFeat;
+                        document.getElementById('manualUnit').textContent = data.errTax.unit;
+                        document.getElementById('manualPhenomenon').textContent = data.errTax.phenomenon;
+                        document.getElementById('manualLinguistic').textContent = data.errTax.level;
+                    })
+                    .catch(err => {
+                        console.error("Error processing file:", err);
+                    });
+                    
+                } catch (error) {
+                    console.error('Error processing error entry:', error);
+                    showAlert('Error processing error entry.', 'error');
+                }
+                
+                
+                
+                
+                
+                
+                
+                // Show result container
+                document.getElementById('manualResultContainer').classList.remove('hidden');
+            }
+        });
+    </script>
+</body>
+</html>

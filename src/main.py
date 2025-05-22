@@ -50,12 +50,15 @@ def entry(path):
                 
                 errorList.append(err)
 
-                #if globals.debug:
+                if globals.debug:
+                    err.print([])
                     #err.print(["HN", "BA", "Dİ", "BH", "KI", "YA"])
                     #err.print(["ÜzY", "ÜU", "ÜDü", "KH", "ÜzB", "ÜDa", "ÜzT"])
-                    #err.print(["KH"])
+                    #err.print(["ES", "KS", "DU", "SA", "İY", "ÇA", "ZA", "OL", "ŞA", "KİP", "GÖ", "ÇF", "Kİ", "", "KT", "GE", "SE", "AB", "KBF", "YENİ", "TÜ"])
+                    #err.print(["ES", "KS"])
 
     return errorList
+    
     """
     # for parallel data extraction
     #for pair in sentence_pairs:
@@ -70,6 +73,37 @@ def entry(path):
         for id, original, corrected in unique_pairs:
             writer.writerow([id, original, corrected])
     """
+
+def entry_manual_process(errorType, originalText, correctedText):
+
+    err = Error()
+    err.idLabelStudio = 1
+    err.idData = 1
+    err.rawText = originalText
+    err.idxStartErr = 0
+    err.idxEndErr = len(originalText) # no means
+    err.sentOrig = originalText
+    err.idxStartSent = 0
+    err.idxEndSent = len(originalText) # no means
+    err.sentCorr = correctedText
+    err.errType = errorType
+    err.incorrText = originalText
+    err.corrText = correctedText
+
+    err.errTax = Taxonomy()
+    err.errTax.pos = POS.mapPOS(err)
+    err.errTax.unit = Unit.mapUnit(err)
+    err.errTax.phenomenon = Phenomenon.mapPhenomenon(err)
+    err.errTax.level = Level.mapLevel(err)
+    err.errTax.infFeat = InfFeat.mapInfFeat(err)
+    err.errTax.lexFeat = LexFeat.mapLexFeat(err)
+
+
+    return err
+
+
+
+
 
 
 if __name__ == "__main__":
