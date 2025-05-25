@@ -6,3 +6,6 @@ __pycache__/
 
 # Ignore MACOS file system files
 .DS_Store
+
+# Ignore uploaded files
+uploaded
