@@ -46,7 +46,13 @@ class Phenomenon(Enum):
                     return Phenomenon.NONE
             # SPACING
             case 'BA':
-                return Phenomenon.MISUSE
+                """
+                if unnecessary spaces are inserted within a single word -> ADDITION, else OMMISSION
+                """
+                if len(err.incorrText.split()) > 1:
+                    return Phenomenon.ADDITION
+                else:
+                    return Phenomenon.OMISSION
             # DIACRITICS
             case 'Dİ':
                 """
