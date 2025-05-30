@@ -42,7 +42,7 @@ class POS(Enum):
                 return [POS.NONE]
             case 'KS': # todo: will be deleted
                 return [POS.NONE]
-            case 'SI': # todo: will be added to LS at the end
+            #case 'SI': # todo: will be added to LS at the end
                 return [POS.NONE]
             case 'SE':
                 return [POS.NONE]
