@@ -126,7 +126,7 @@ class Phenomenon(Enum):
                 """
                 return Phenomenon.MISUSE
             # VOWEL DROPPING
-            case 'ÜD':
+            case 'ÜDü':
                 """
                 direct mapping
                 """

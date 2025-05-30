@@ -127,7 +127,7 @@ class Unit(Enum):
                 """
                 return Unit.AFFIX
             # VOWEL DROPPING
-            case 'ÜD':
+            case 'ÜDü':
                 """
                 direct mapping
                 """
