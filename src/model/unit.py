@@ -55,15 +55,10 @@ class Unit(Enum):
             # CAPITALIZATION
             case 'BH':
                 """
-                if the error occurs at the begining of the sentence, return SENTENCE
                 if there are more than one token in the original and corrected texts, and their lengths are equal, return PHRASE, else return WORD
                 """
-                # extract tokens from the original sentence
-                tokens = err.sentOrig.split()
-
-                if tokens[0] == err.incorrText:
-                    return Unit.SENTENCE
-                elif (len(err.incorrText.split()) == len(err.corrText.split()) and len(err.incorrText.split()) > 1):
+                # todo: sentence detection?               
+                if (len(err.incorrText.split()) == len(err.corrText.split()) and len(err.incorrText.split()) > 1):
                     return Unit.PHRASE
                 else:
                     return Unit.WORD
