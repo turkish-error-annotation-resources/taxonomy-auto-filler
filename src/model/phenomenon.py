@@ -188,9 +188,9 @@ class Phenomenon(Enum):
                 # assumption: only one error included
                 analysis_format_long = Helper.get_morpholocial_analysis_for_incorrect_text(err)
 
-                if any(tag in analysis_format_long for tag in [":Acc", ":Dat", ":Gen", ":Loc", ":Ins", ":Abl", ":Equ"]):
+                if any(tag in analysis_format_long[0] for tag in [":Acc", ":Dat", ":Gen", ":Loc", ":Ins", ":Abl", ":Equ"]):
                     return Phenomenon.MISUSE
-
+                
                 if len(err.incorrText) > len(err.corrText):
                     return Phenomenon.ADDITION
                 elif len(err.incorrText) < len(err.corrText):
@@ -205,8 +205,10 @@ class Phenomenon(Enum):
                 # assumption: only one error included
                 analysis_format_long = Helper.get_morpholocial_analysis_for_incorrect_text(err)
 
-                if any(tag in analysis_format_long for tag in [":P1sg", ":P2sg", ":P3sg", ":P1pl", ":P2pl", ":P3pl"]):
+                if any(tag in analysis_format_long[0] for tag in [":P1sg", ":P2sg", ":P3sg", ":P1pl", ":P2pl", ":P3pl"]):
                     return Phenomenon.MISUSE
+                
+                print(analysis_format_long)
 
                 if len(err.incorrText) > len(err.corrText):
                     return Phenomenon.ADDITION
@@ -216,7 +218,7 @@ class Phenomenon(Enum):
                 # assumption: only one error included
                 analysis_format_long = Helper.get_morpholocial_analysis_for_incorrect_text(err)
 
-                if any(tag in analysis_format_long for tag in [":Caus", ":Pass", "Recip", ":Reflex"]):
+                if any(tag in analysis_format_long[0] for tag in [":Caus", ":Pass", "Recip", ":Reflex"]):
                     return Phenomenon.MISUSE
                 
                 if len(err.incorrText) > len(err.corrText):
@@ -232,7 +234,7 @@ class Phenomenon(Enum):
                 # assumption: only one error included
                 analysis_format_long = Helper.get_morpholocial_analysis_for_incorrect_text(err)
 
-                if any(tag in analysis_format_long for tag in ["Neg"]):
+                if any(tag in analysis_format_long[0] for tag in ["Neg"]):
                     return Phenomenon.MISUSE
 
                 if len(err.incorrText) > len(err.corrText):
@@ -248,7 +250,7 @@ class Phenomenon(Enum):
                 # assumption: only one error included
                 analysis_format_long = Helper.get_morpholocial_analysis_for_incorrect_text(err)
 
-                if any(tag in analysis_format_long for tag in ["+Imp", ":Opt", ":Able", ":Neces", ":Cop", ":Aor", ":Cond", ":Unable", ":Des", "Zero→Verb+Pres+A3sg", ":Cop"]):
+                if any(tag in analysis_format_long[0] for tag in ["+Imp", ":Opt", ":Able", ":Neces", ":Cop", ":Aor", ":Cond", ":Unable", ":Des", "Zero→Verb+Pres+A3sg", ":Cop"]):
                     return Phenomenon.MISUSE
 
                 if len(err.incorrText) > len(err.corrText):
