@@ -205,6 +205,7 @@ class Phenomenon(Enum):
                 # assumption: only one error included
                 analysis_format_long = Helper.get_morpholocial_analysis_for_incorrect_text(err)
 
+                # todo: 2'nci tekil şahısta buraya girmiyor!!!
                 if any(tag in analysis_format_long[0] for tag in [":P1sg", ":P2sg", ":P3sg", ":P1pl", ":P2pl", ":P3pl"]):
                     return Phenomenon.MISUSE
                 
@@ -301,7 +302,7 @@ class Phenomenon(Enum):
                 """
                 direct mapping
                 """
-                return Phenomenon.MISUSE
+                return Phenomenon.OMISSION
             case 'TÜ':
                 if len(err.incorrText) > len(err.corrText):
                     return Phenomenon.ADDITION
