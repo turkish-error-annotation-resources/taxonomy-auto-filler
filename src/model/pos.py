@@ -46,6 +46,21 @@ class POS(Enum):
                 return [POS.NONE]
             case 'SE':
                 return [POS.NONE]
+            case 'YK': # todo: will be deleted
+                return [POS.NONE]
+            case 'EK': # todo: will be deleted
+                return [POS.NONE]
+            case 'GK': # todo: will be deleted
+                return [POS.NONE]
+            case 'KHa': # todo: will be added to LS at the end
+                return [POS.NONE]
+            case 'İH':
+                return [POS.NONE]
+            case 'AnB':
+                return [POS.NONE]
+            case 'ST':
+                return [POS.NONE]
+
             #  OTHERS
             case _:
                 posList = Helper.get_POS(err.sentCorr, err.corrText)
