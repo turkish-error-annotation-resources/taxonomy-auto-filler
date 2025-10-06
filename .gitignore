@@ -1,11 +1,17 @@
-# Ignore virtual environment folder
+# ignore virtual environment folder
 .venv/
 
-# Python cache files
-__pycache__/
+# ignore visual studio code settings folder
+.vscode/
 
-# Ignore MACOS file system files
+# ignore macOS system files
 .DS_Store
 
-# Ignore uploaded files
-uploaded
+# ignore python cache files
+__pycache__/
+
+
+
+# ignore statistics and sampling files
+sampling.py
+stats.py
