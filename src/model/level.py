@@ -1,7 +1,8 @@
 from enum import Enum
+from model.error_tag import ErrorTag
 
+# Represents <Linguistic Level> in the paper https://doi.org/10.1007/s10579-024-09794-0
 class Level(Enum):
-    """ Represents <Linguistic Level> in the paper https://doi.org/10.1007/s10579-024-09794-0 """
 
     NONE = 'None'
     MORPHOPHONOLOGY = 'Morphophonology'
@@ -9,49 +10,22 @@ class Level(Enum):
     GRAMMAR = 'Grammar'
     SEMANTICS = 'Semantics'
     PRAGMATICS = 'Pragmatics'
-    DISCOURSE = 'Discourse'
-    SOCIOLINGUISTIC = 'Sociolinguistic'
-
-    def __str__(self):
-        return self.value
+    DISCOURSE = 'Discourse' # not used
+    SOCIOLINGUISTIC = 'Sociolinguistic' # not used
 
     @staticmethod
     def mapLevel(err):
-        mapping = {
-        'HN': Level.ORTHOGRAPHY, # HATALI NOKTALAMA (PUNCTUATION)
-        'BA': Level.ORTHOGRAPHY, # BİTİŞİK-AYRI (SPACING)
-        'Dİ': Level.ORTHOGRAPHY, # DİYAKRİTİK (DIACTRIC)
-        'BH': Level.ORTHOGRAPHY, # BÜYÜK HARF (CAPITALIZATION)
-        'KI': Level.ORTHOGRAPHY, # KISALTMA (ABBREVIATION)
-        'YA': Level.ORTHOGRAPHY, # YAZIM (SPELLING)
-        'ÜzY': Level.MORPHOPHONOLOGY, # ÜNSÜZ YUMUŞAMASI (CONSONANT VOICING)
-        'ÜU': Level.MORPHOPHONOLOGY, # ÜNLÜ UYUMU (VOWEL HARMONY)
-        'ÜDü': Level.MORPHOPHONOLOGY, # ÜNLÜ DÜŞMESİ (VOWEL DROPPING)
-        'KH': Level.MORPHOPHONOLOGY, # KAYNAŞTIRMA HARFİ (BUFFET LETTER)
-        'ÜzB': Level.MORPHOPHONOLOGY, # ÜNSÜZ BENZEŞMESİ (CONSONANT ASSIMILIATION)
-        'ÜDa': Level.MORPHOPHONOLOGY, # ÜNLÜ DARALMASI (VOWEL NARROWING)
-        'ÜzT': Level.MORPHOPHONOLOGY, # ÜNSÜZ TÜREMESİ (CONSONANT DOUBLING)
-        'ES': Level.GRAMMAR, # SIRA (SEQUENCING) (TODO: ES - EK SIRASI AND KS - KELİME SIRASI ERRORS WILL BE MERGED AS SI IN LABEL STUDIO)
-        'KS': Level.GRAMMAR, # SIRA (SEQUENCING) (TODO: ES - EK SIRASI AND KS - KELİME SIRASI ERRORS WILL BE MERGED AS SI IN LABEL STUDIO)
-        'SI':Level.GRAMMAR, # no such label yet
-        'DU': Level.GRAMMAR, # DURUM (CASE)
-        'SA': Level.GRAMMAR, # SAYI (NUMBER)
-        'İY': Level.GRAMMAR, # İYELİK (POSSESSION)
-        'ÇA': Level.GRAMMAR, # ÇATI (VOICE)
-        'ZA': Level.GRAMMAR, # ZAMAN (TENSE)
-        'OL': Level.GRAMMAR, # OLUMSUZLUK (NEGATION)
-        'ŞA': Level.GRAMMAR, # ŞAHIS (PERSON)
-        'KİP': Level.GRAMMAR, # KİP (MOOD)
-        'GÖ': Level.GRAMMAR, # GÖRÜNÜŞ (ASPECT)
-        'ÇF': Level.GRAMMAR, # ÇEKİMSİZ FİİL (NON-FINITE VERB)
-        'Kİ': Level.GRAMMAR, # Kİ HATASI (KI ERROR)
-        'KT': Level.GRAMMAR, # KELİME TÜRÜ (WORD CLASS)
-        'GE': Level.GRAMMAR, # GEREKSİZ EK (UNNECESSARY AFFIX)
-        'SE': Level.GRAMMAR, # SORU EKİ (INTERROGATIVE PARTICLE)
-        'AB': Level.GRAMMAR, # ALT BİÇİMBİRİM (ALLOMORPHY)
-        'KBF': Level.GRAMMAR, # KURALLI BİLEŞİK FİİL (DESCRIPTIVE COMPOUND VERB)
-        'YENİ': Level.GRAMMAR, # ??? (FINAL-INITIAL MERGE) # TODO: "YENİ" WILL BE CHANGED IN LABEL STUDIO
-        'TÜ': Level.GRAMMAR # # TÜRETME (DERIVATIONAL AFFIX)
-        }
-        
-        return mapping.get(err.errType, Level.NONE)
+        if err.errType in [ErrorTag.NO.value, ErrorTag.YA.value, ErrorTag.BA.value, ErrorTag.BH.value, ErrorTag.Dİ.value, ErrorTag.KI.value]:
+            return Level.ORTHOGRAPHY
+        elif err.errType in [ErrorTag.ÜzY.value, ErrorTag.ÜDü.value, ErrorTag.ÜU.value, ErrorTag.KH.value, ErrorTag.ÜzB.value, ErrorTag.ÜDa.value, ErrorTag.ÜzT.value]:
+            return Level.MORPHOPHONOLOGY
+        elif err.errType in [ErrorTag.SI.value, ErrorTag.DU.value, ErrorTag.SA.value, ErrorTag.İY.value, ErrorTag.ÇA.value, ErrorTag.ZA.value, ErrorTag.KİP.value,
+                            ErrorTag.GÖ.value, ErrorTag.OL.value, ErrorTag.ŞA.value, ErrorTag.ÇF.value, ErrorTag.SE.value, ErrorTag.KK.value, ErrorTag.GE.value,
+                            ErrorTag.ST.value, ErrorTag.TÜ.value, ErrorTag.AB.value, ErrorTag.KEG.value, ErrorTag.KBF.value]:
+            return Level.GRAMMAR
+        elif err.errType in [ErrorTag.AnB.value]:
+            return Level.SEMANTICS
+        elif err.errType in [ErrorTag.ÜS.value]:
+            return Level.PRAGMATICS
+        else:
+            return Level.NONE

@@ -1,280 +1,224 @@
 from enum import Enum
 from helper import Helper
-import globals
+import config
+import nltk
+from nltk.tokenize import wordpunct_tokenize
+nltk.download("punkt")
+from nltk.tokenize import sent_tokenize
+from model.error_tag import ErrorTag
 
+# Represents <Unit> in the paper https://doi.org/10.1007/s10579-024-09794-0
 class Unit(Enum):
-    """ Represents <Unit> in the paper https://doi.org/10.1007/s10579-024-09794-0 """
 
     NONE = 'None'
     GRAPHEME = 'Grapheme'
     AFFIX = 'Affix'
     LEMMA = 'Lemma'
     WORD = 'Word'
-    MWE = 'Multi-word Expression'
+    MWE = 'Multi-word Expression' # not used
     PHRASE = 'Phrase'
     SENTENCE = 'Sentence'
 
-    def __str__(self):
-        return self.value
-
     @staticmethod
-    def mapUnit(err):
-        match err.errType:
-            # PUNCTUATION
-            case 'HN': 
-                """
-                punctuation marks in original and corrected texts are extracted
-                symmetric difference between original and corrected texts is checked
-                if there is an apostroph character in symmetric difference or corrected text is in abbreviation list of TDK, return WORD, else return SENTENCE
-                """
-                corrPunct = Helper.extract_punctuation_marks_TR(err.corrText)
-                incorrPunct = Helper.extract_punctuation_marks_TR(err.incorrText)
+    def mapUnit(err, line_list, overlap_flag, sentence):
+        if err.errType == ErrorTag.DİJ.value:
+            return Unit.NONE
+        elif err.errType == ErrorTag.Dİ.value:
+            return Unit.GRAPHEME
+        elif err.errType in [ErrorTag.KI.value, ErrorTag.ST.value, ErrorTag.KEG.value]:
+            return Unit.WORD
+        elif err.errType in [ErrorTag.ÜDü.value, ErrorTag.ÜDa.value, ErrorTag.ÜzT.value]:
+            return Unit.LEMMA
+        elif err.errType in [ErrorTag.ÜU.value, ErrorTag.KH.value, ErrorTag.ÜzB.value, ErrorTag.DU.value, ErrorTag.SA.value,
+                            ErrorTag.İY.value, ErrorTag.ÇA.value, ErrorTag.ZA.value, ErrorTag.KİP.value, ErrorTag.GÖ.value,
+                            ErrorTag.ŞA.value, ErrorTag.ÇF.value, ErrorTag.SE.value, ErrorTag.KK.value, ErrorTag.GE.value,
+                            ErrorTag.TÜ.value, ErrorTag.AB.value, ErrorTag.KBF.value]:
+            return Unit.AFFIX
+        elif err.errType == ErrorTag.NO.value:
+            # extracting punctuation marks in original and corrected texts 
+            corrPunct = Helper.extract_punctuation_marks_TR(err.corrText)
+            incorrPunct = Helper.extract_punctuation_marks_TR(err.incorrText)
 
-                if any(mark in list(set(corrPunct) ^ set(incorrPunct)) for mark in ["'", '´', '`']) or err.corrText.lower() in globals.abbr_list_TR:
-                    return Unit.WORD
-                else:
-                    return Unit.SENTENCE
-            # SPACING
-            case 'BA':
-                """
-                if no spacing exists in the corrected form and some affixes exist in the corrected form, return AFFIX
-                for all other cases including if any spacing exists in corrected form, return WORD
-                # todo: affix list may be extended
-                """
-                corrTxtLower = err.corrText.lower()
-                if (" " not in corrTxtLower) and (corrTxtLower[-3:] in ["dır", "dir", "dur", "dür", "tır", "tir", "tur", "tür", "dan", "den", "tan", "ten"] or corrTxtLower[-2:] in ["de", "da", "te", "ta"]):
-                    return Unit.AFFIX
-                else:
-                    return Unit.WORD
-            # DIACRITICS
-            case 'Dİ':
-                """
-                direct mapping
-                """
-                return Unit.GRAPHEME
-            # CAPITALIZATION
-            case 'BH':
-                """
-                if there are more than one token in the original and corrected texts, and their lengths are equal, return PHRASE, else return WORD
-                """
-                # todo: sentence detection?               
-                if (len(err.incorrText.split()) == len(err.corrText.split()) and len(err.incorrText.split()) > 1):
-                    return Unit.PHRASE
-                else:
-                    return Unit.WORD
-            # ABBREVIATION
-            case 'KI':
-                """
-                direct mapping
-                """
+            # checking symmetric difference between original and corrected texts is checked
+            # if there is an apostroph character in symmetric difference or corrected text is in abbreviation list of TDK, return WORD, else return SENTENCE
+            if any(mark in list(set(corrPunct) ^ set(incorrPunct)) for mark in ["'", '´', '`']) or err.corrText.lower() in config.ABBREVIATIONS_TDK:
                 return Unit.WORD
-            # SPELLING
-            case 'YA':
-                """
-                spell errors are assumed to be annotated for a single token only
-                if corrected text has more than one token, return the first result of the detection
-                if corrected text cannot be analyzed, return NONE
-                if incorrect text starts with the first element of the surfaceForm (which is lemma with phonological event), return AFFIX, else return LEMMA
-                """
-                corrTxtLower = err.corrText.lower()
-                incorrTxtLower = err.incorrText.lower()
+            else:
+                return Unit.SENTENCE
+        elif err.errType == ErrorTag.YA.value:
+            if len(line_list) == 0:
+                return Unit.NONE
 
-                # we're sure it returns a list with 1 element or 0 (if it cannot be analyzed)
-                analysisList = Helper.get_morpholocial_analysis(err)
+            lemmas = []
+            if overlap_flag:
+                tokens = wordpunct_tokenize(err.corrText)
 
-                for analysis in analysisList:
-                   # be sure it can be analyzed
-                    if str(analysis.getPos()) != "Unknown":
-                        morphemeSurfaceList = [m.surface for m in analysis.getMorphemeDataList()] # e.g. ['ağac', '', 'ın']
-                        lemmaWithPhonologicEvent = str(morphemeSurfaceList[0]) # stem
+                for token in tokens:
+                    multi_token_flag = False
+
+                    for line in line_list:
+                        cols = line.split("\t")
                         
-                        # if incorrect text starts with the lemma with phonologic event (stem), then the error occured in the AFFIX, else in the LEMMA
-                        if incorrTxtLower.startswith(lemmaWithPhonologicEvent):
-                            return Unit.AFFIX
-                        else:
-                            return Unit.LEMMA
+                        # if the multi-token flag is on, then keep adding lines until the end index is reached
+                        if multi_token_flag:
+                            lemmas.append(cols[2]) # COL2 is LEMMA
+                            multi_token_flag = False
+
+                        if cols[1].lower() == token.lower():
+                            if "-" in cols[0]:
+                                multi_token_flag = True
+                            else:
+                                lemmas.append(cols[2]) # COL2 is LEMMA
+
+            else:
+                for line in line_list:
+                    cols = line.split("\t")
+                    lemmas.append(cols[2]) # COL2 is LEMMA
+            
+            if len(lemmas) == 0:
                 return Unit.NONE
-            # CONSONANT VOICING
-            case 'ÜzY':
-                """
-                consonant voicing errors are assumed to be annotated for a single token only
-                if corrected text has more than one token, return the first result of the detection
-                if corrected text cannot be analyzed, return NONE
-                if the last character of the lemma with phonologic event is transformed from "p, ç, t, k" to "b, c, d, ğ", return LEMMA, else return AFFIX
-                """
-                corrTxtLower = err.corrText.lower()
-                incorrTxtLower = err.incorrText.lower()
+            # use the first one (spell errors are assumed to be annotated for a single token only)
+            # if incorrect text starts with the lemma with phonologic event (stem), then the error occured in the AFFIX, else in the LEMMA
+            if (err.incorrText.lower()).startswith(lemmas[0].lower()):
+                return Unit.AFFIX
+            else:
+                return Unit.LEMMA
+        elif err.errType == ErrorTag.BA.value:
+            corrTxtLower = err.corrText.lower()
+            # if no spacing exists in the corrected form and some affixes exist in the corrected form, return AFFIX
+            # for all other cases including if any spacing exists in corrected form, return WORD
+            if (" " not in corrTxtLower) and (corrTxtLower[-3:] in ["dır", "dir", "dur", "dür", "tır", "tir", "tur", "tür", "dan", "den", "tan", "ten"] or corrTxtLower[-2:] in ["de", "da", "te", "ta"]):
+                return Unit.AFFIX
+            else:
+                return Unit.WORD
+        elif err.errType == ErrorTag.BH.value:
+            if len(line_list) == 0:
+                return Unit.NONE
+
+            if overlap_flag:
+                tokens = wordpunct_tokenize(err.corrText)
+                for token in tokens:
+                    for line in line_list:
+                        cols = line.split("\t")
+                        if cols[1].lower() == token.lower() and cols[0] == "1":
+                            return Unit.SENTENCE
+            else:
+                for line in line_list:
+                    cols = line.split("\t")
+                    if cols[0] == "1":
+                        return Unit.SENTENCE
                 
-                # we're sure it returns a list with 1 element or 0 (if it cannot be analyzed)
-                analysisList = Helper.get_morpholocial_analysis(err)
-
-                for analysis in analysisList:
-                    # be sure it can be analyzed
-                    if str(analysis.getPos()) != "Unknown":
-                        morphemeSurfaceList = [m.surface for m in analysis.getMorphemeDataList()] # e.g. ['ağac', '', 'ın']
-                        lemmaWithPhonologicEvent = str(morphemeSurfaceList[0]) # stem
-
-                        # if consonant voicing is observed in lemmaWithPhonologicEvent (stem)
-                        if (lemmaWithPhonologicEvent[-1] == "b" and incorrTxtLower[:len(lemmaWithPhonologicEvent)][-1] == "p") or (lemmaWithPhonologicEvent[-1] == "c" and incorrTxtLower[:len(lemmaWithPhonologicEvent)][-1] == "ç") or (lemmaWithPhonologicEvent[-1] == "d" and incorrTxtLower[:len(lemmaWithPhonologicEvent)][-1] == "t") or (lemmaWithPhonologicEvent[-1] == "ğ" and incorrTxtLower[:len(lemmaWithPhonologicEvent)][-1] == "k"):
-                            return Unit.LEMMA
-                        else:
-                            return Unit.AFFIX
+            #if (len(err.incorrText.split()) == len(err.corrText.split()) and len(err.incorrText.split()) > 1):
+            if len(err.corrText.split()) > 1:
+                return Unit.PHRASE
+            else:
+                return Unit.WORD
+        elif err.errType == ErrorTag.ÜzY.value:
+            if len(line_list) == 0:
                 return Unit.NONE
-            # VOWEL HARMONY
-            case 'ÜU':
-                """
-                direct mapping
-                """
-                return Unit.AFFIX
-            # VOWEL DROPPING
-            case 'ÜDü':
-                """
-                direct mapping
-                """
-                return Unit.LEMMA
-            # BUFFER LETTERS
-            case 'KH':
-                """
-                direct mapping
-                """
-                return Unit.AFFIX
-            # CONSONANT ASSIMILATION
-            case 'ÜzB':
-                """
-                direct mapping
-                """
-                return Unit.AFFIX
-            # VOWEL NARROWING
-            case 'ÜDa':
-                """
-                direct mapping
-                """
-                return Unit.LEMMA
-            # CONSONANT DOUBLING
-            case 'ÜzT':
-                """
-                direct mapping
-                """
-                return Unit.LEMMA
-            case 'SI':
-                # extract tokens from the original sentence
-                tokens = err.sentOrig.split()
-                tokens_erroredText = err.incorrText.split()
 
-                if tokens == tokens_erroredText: # assumption: no other errors exist in the sentence
+            # consonant voicing errors are assumed to be annotated for a single token only
+            tokens = wordpunct_tokenize(err.corrText)
+            
+            lemmas = []
+            if overlap_flag:
+                tokens = wordpunct_tokenize(err.corrText)
+
+                for token in tokens:
+                    multi_token_flag = False
+
+                    for line in line_list:
+                        cols = line.split("\t")
+                        
+                        # if the multi-token flag is on, then keep adding lines until the end index is reached
+                        if multi_token_flag:
+                            lemmas.append(cols[2]) # COL2 is LEMMA
+                            multi_token_flag = False
+
+                        if cols[1].lower() == token.lower():
+                            if "-" in cols[0]:
+                                multi_token_flag = True
+                            else:
+                                lemmas.append(cols[2]) # COL2 is LEMMA
+
+            else:
+                for line in line_list:
+                    cols = line.split("\t")
+                    lemmas.append(cols[2]) # COL2 is LEMMA
+
+            if len(lemmas) == 0:
+                return Unit.NONE
+
+            if (err.incorrText[:len(lemmas[0])][-1] == "p" and err.corrText[:len(lemmas[0])][-1] == "b") and (err.incorrText[:len(lemmas[0])][-1] == "ç" and err.corrText[:len(lemmas[0])][-1] == "c") and (err.incorrText[:len(lemmas[0])][-1] == "t" and err.corrText[:len(lemmas[0])][-1] == "d") and (err.incorrText[:len(lemmas[0])][-1] == "k" and err.corrText[:len(lemmas[0])][-1] == "ğ"):
+                return Unit.LEMMA
+            else:
+                return Unit.AFFIX
+        elif err.errType == ErrorTag.SI.value:            
+            if not overlap_flag:
+                tokens_sentence = wordpunct_tokenize(sentence)
+                tokens_corrText = wordpunct_tokenize(err.corrText)
+                if len(tokens_sentence) == len(tokens_corrText):
                     return Unit.SENTENCE
-                elif (len(err.incorrText.split()) == len(err.corrText.split()) and len(err.incorrText.split()) > 1):
+            
+            #if (len(err.incorrText.split()) == len(err.corrText.split()) and len(err.incorrText.split()) > 1):
+            if len(err.corrText.split()) > 1:
+                return Unit.PHRASE
+            elif len(err.corrText.split()) == 1: 
+                return Unit.AFFIX
+            else:
+                return Unit.NONE
+        elif err.errType == ErrorTag.OL.value:
+            tokens_erroredText = err.incorrText.split()
+            if len(tokens_erroredText) > 1 and len(err.corrText.split()) == 1:
+                return Unit.WORD
+            return Unit.AFFIX
+        elif err.errType == ErrorTag.SH.value:
+            # SH errors may have empty err.corrText (because it is capable to take OMISSION value for its Phenomenon facet)
+            if len(err.corrText.split()) == 0:
+                if len(err.incorrText.split()) > 1:
                     return Unit.PHRASE
-                elif len(err.corrText.split()) == 1: 
-                    return Unit.AFFIX
                 else:
-                    return Unit.NONE
-            case 'KS':
-                """
-                direct mapping
-                """
-                return Unit.WORD
-            case 'ES':
-                """
-                direct mapping
-                """
-                return Unit.AFFIX
-            case 'DU':
-                """
-                direct mapping
-                """
-                return Unit.AFFIX
-            case 'SA':
-                """
-                direct mapping
-                """
-                return Unit.AFFIX
-            case 'İY':
-                """
-                direct mapping
-                """
-                return Unit.AFFIX
-            case 'ÇA':
-                """
-                direct mapping
-                """
-                return Unit.AFFIX
-            case 'ZA':
-                """
-                direct mapping
-                """
-                return Unit.AFFIX
-            case 'OL':
-                """
-                if more than one token is labeled as incorrect and 
-                length of corrected form is 1 then WORD, else AFFIX
-                """
-                tokens_erroredText = err.incorrText.split()
-
-                if len(tokens_erroredText) > 1 and len(err.corrText.split()) == 1:
                     return Unit.WORD
-                
+            else:
+                if len(err.corrText.split()) > 1:
+                    return Unit.PHRASE
+                else:
+                    return Unit.WORD
+        elif err.errType == ErrorTag.İB.value:
+            # İB errors are assumed to be SENTENCE or PHRASE level only
+            tokens_incorrText = wordpunct_tokenize(err.incorrText)
+            sentence_list = sent_tokenize(err.rawText)
+            for sent in sentence_list:
+                tokens_sent = wordpunct_tokenize(sent)
+                if tokens_sent == tokens_incorrText:
+                    return Unit.SENTENCE
+            if len(err.corrText.split()) > 1:
+                return Unit.PHRASE
+            return Unit.NONE
+        elif err.errType == ErrorTag.AnB.value:
+            # AnB errors have empty err.corrText
+            tokens_incorrText = wordpunct_tokenize(err.incorrText)
+            sentence_list = sent_tokenize(err.rawText)
+            for sent in sentence_list:
+                tokens_sent = wordpunct_tokenize(sent)
+                if tokens_sent == tokens_incorrText:
+                    return Unit.SENTENCE
+            if len(err.incorrText.split()) > 1:
+                return Unit.PHRASE
+            return Unit.WORD
+        elif err.errType == ErrorTag.ÜS.value:
+            if len(line_list) == 0:
+                return Unit.NONE
+
+            lemma = ""
+            token = wordpunct_tokenize(err.corrText)
+            for line in line_list:
+                cols = line.split("\t")
+                if cols[1] == token:
+                    lemma = cols[2]
+                    break
+
+            if (err.incorrText.split()[0].lower()).startswith(lemma.lower()):
                 return Unit.AFFIX
-            case 'ŞA':
-                """
-                direct mapping
-                """
-                return Unit.AFFIX
-            case 'KİP':
-                """
-                direct mapping
-                """
-                return Unit.AFFIX
-            case 'GÖ':
-                """
-                direct mapping
-                """
-                return Unit.AFFIX
-            case 'ÇF':
-                """
-                direct mapping
-                """
-                return Unit.AFFIX
-            case 'Kİ':
-                """
-                direct mapping
-                """
-                return Unit.AFFIX
-            case 'KT':
-                """
-                direct mapping
-                """
+            else:
                 return Unit.WORD
-            case 'GE':
-                """
-                direct mapping
-                """
-                return Unit.AFFIX
-            case 'SE':
-                """
-                direct mapping
-                """
-                return Unit.AFFIX
-            case 'AB':
-                """
-                direct mapping
-                """
-                return Unit.AFFIX
-            case 'KBF':
-                """
-                direct mapping
-                """
-                return Unit.AFFIX
-            case 'YENİ': # TODO: will be renamed
-                """
-                direct mapping
-                """
-                return Unit.WORD
-            case 'TÜ':
-                """
-                direct mapping
-                """
-                return Unit.AFFIX
-            
-            
-                
