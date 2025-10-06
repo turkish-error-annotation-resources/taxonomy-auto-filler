@@ -10,9 +10,8 @@
 # ignore python cache files
 __pycache__/
 
-# ignore statistics and sampling files
+# ignored files
+Annotations.xlsx
 sampling.py
 stats.py
-
-# ignore todo file
 todo.txt
