@@ -102,7 +102,7 @@ class Phenomenon(Enum):
             else:
                 return Phenomenon.NONE
         elif err.errType in [ErrorTag.KH.value, ErrorTag.DU.value]:
-            # TODO: incorrect text is assumed that it involves only one error
+            # incorrect text is assumed that it involves only one error
             # compare err.incorrText and err.corrText
             if len(err.incorrText) > len(err.corrText):
                 return Phenomenon.ADDITION

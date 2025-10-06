@@ -155,8 +155,8 @@ class Helper:
                         corr2 = item["value"]["text"][0]
                         if item["type"] == "textarea" and item["id"] != id and item["value"]["start"] == startIdx and item["value"]["end"] == endIdx and corr2 != corrected:
                             same_span_multi_correction_counter += 1
-                            if (err_type != "GEREKSİZ" and err_type2 != "GEREKSİZ"): # TODO: will be deleted!!!
-                                print(f"ID: {dataId}, Text: {text}, Corrected: {corrected}, Corrected2: {corr2}, ErrType: {err_type}, ErrType2: {err_type2}")
+                            #if (err_type != "GEREKSİZ" and err_type2 != "GEREKSİZ"): # TODO: will be deleted!!!
+                            #print(f"ID: {dataId}, Text: {text}, Corrected: {corrected}, Corrected2: {corr2}, ErrType: {err_type}, ErrType2: {err_type2}")
 
         if same_span_multi_correction_counter == 0:
             print("Passed. Same spans with different labels have the same corrected text.")

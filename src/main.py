@@ -187,7 +187,7 @@ if __name__ == "__main__":
     
     enriched_errors = run(args.path)
 
-    # TODO: will be deleted
+    # optionally, save the enriched errors to a JSON file
     #errors_as_dicts = [e.to_dict() for e in enriched_errors]
     #with open("./res/errors_elif.json", "w", encoding="utf-8") as f:
         #json.dump(errors_as_dicts, f, ensure_ascii=False, indent=4)
