@@ -19,7 +19,7 @@ class Helper:
                 #data_elif = json.load(file)
 
                 # getting task IDs in each sheet by reading Annotations.xlsx file
-                #filepath = "./res/Annotations.xlsx"
+                #filepath = "./Annotations.xlsx"
                 #xl = pd.ExcelFile(filepath)
                 #sheet_names = xl.sheet_names
                 #results = {}
@@ -171,7 +171,7 @@ class Helper:
     @staticmethod
     def load_metadata():
         try:
-            df = pd.read_excel("./res/metadata.xlsx", sheet_name="raw")
+            df = pd.read_excel("./input/metadata.xlsx", sheet_name="raw")
             for row in df.values.tolist():
                 config.METADATA.append((row[0], str(row[1]).lower(), str(row[2]).lower(), str(row[3]).lower())) # id, nationality, gender, topic
         except Exception as e:

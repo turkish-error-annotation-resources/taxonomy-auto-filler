@@ -150,20 +150,20 @@ def run(path):
                 err.errTax.level = Level.mapLevel(err)
 
 
-                print("\n##########################")
+                #print("\n##########################")
                 #for item in line_list:
                 #    print(item)
-                print(f"Error ID: {err.errTax.id}")
-                print(f"Corrected Text: {err.corrText}")
-                print(f"POS: {err.errTax.pos}")
-                print(f"Inflectional Features: {err.errTax.infFeat}")
-                print(f"Lexical Features: {err.errTax.lexFeat}")
-                print(f"Unit: {err.errTax.unit.value}")
-                print(f"Phenomenon: {err.errTax.phenomenon.value}")
-                print(f"Level: {err.errTax.level.value}")
-                print(f"Nationality: {err.metadata.nationality}")
-                print(f"Gender: {err.metadata.gender}")
-                print(f"Topic: {err.metadata.topic}")
+                #print(f"Error ID: {err.errTax.id}")
+                #print(f"Corrected Text: {err.corrText}")
+                #print(f"POS: {err.errTax.pos}")
+                #print(f"Inflectional Features: {err.errTax.infFeat}")
+                #print(f"Lexical Features: {err.errTax.lexFeat}")
+                #print(f"Unit: {err.errTax.unit.value}")
+                #print(f"Phenomenon: {err.errTax.phenomenon.value}")
+                #print(f"Level: {err.errTax.level.value}")
+                #print(f"Nationality: {err.metadata.nationality}")
+                #print(f"Gender: {err.metadata.gender}")
+                #print(f"Topic: {err.metadata.topic}")
 
                 errors.append(err)
 
@@ -188,6 +188,6 @@ if __name__ == "__main__":
     enriched_errors = run(args.path)
 
     # optionally, save the enriched errors to a JSON file
-    #errors_as_dicts = [e.to_dict() for e in enriched_errors]
-    #with open("./res/errors_elif.json", "w", encoding="utf-8") as f:
-        #json.dump(errors_as_dicts, f, ensure_ascii=False, indent=4)
+    errors_as_dicts = [e.to_dict() for e in enriched_errors]
+    with open("./output/results_elif.json", "w", encoding="utf-8") as f:
+        json.dump(errors_as_dicts, f, ensure_ascii=False, indent=4)
